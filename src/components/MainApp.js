@@ -1,12 +1,12 @@
 import React from 'react';
-import './App.css';
-import Header from './components/Header/Header'
-import Main from './components/Main'
-import Public from './components/Public'
-import Private from './components/Private/Private'
-import Login from './components/Login'
-import Next from './components/Next'
-import Registration from './components/Registration'
+import '../Styles/App.css';
+import Header from './Header/Header'
+import Main from './Main'
+import Public from './Public'
+import Private from './Private/Private'
+import Login from './Login'
+import Next from './Next'
+import Registration from './Registration'
 import { Switch, Route } from 'react-router-dom'
 
 function MainApp(props) {

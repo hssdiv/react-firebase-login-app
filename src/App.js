@@ -1,10 +1,9 @@
 import React from 'react';
-import './App.css';
 import { BrowserRouter } from 'react-router-dom'
 import MainProvider from './context/MainProvider'
 import { DrawerContext } from './context/DrawerContext'
 import GetWidth from './ui/useWindowSize'
-import MainApp from './MainApp'
+import MainApp from './components/MainApp'
 
 function App() {
     const currentScreenWidth = GetWidth()

@@ -3,6 +3,7 @@ import { AuthContext } from '../../context/AuthContext'
 import PlanetsTableLandscape from './PlanetsTableLandscape'
 import PlanetsTablePortrait from './PlanetsTablePortrait'
 import GetWidth from '../../ui/useWindowSize'
+import '../../Styles/Private.css';
 
 function Private() {
     const { currentUser } = useContext(AuthContext)

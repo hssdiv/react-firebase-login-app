@@ -1,0 +1,42 @@
+
+.planetTable {
+    display: inline-block;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 8px;
+    text-align: left;
+    border: 1px solid grey;
+    margin-top: 50px;
+    border-collapse: collapse;
+  }
+  
+  td {
+    padding: 5px;
+    border-bottom: 1px solid grey;
+  }
+  
+  th {
+    padding: 5px;
+    color: white;
+    background-color: rgb(73, 79, 82);
+    border-bottom: 1px solid black;
+  }
+  
+  td>div:hover {background-color:#f5f5f5;}
+  
+  .firstPlanetTableChild {
+    border-bottom: 1px solid #ddd;
+    width: 150px;
+    padding: 5px;
+    border-bottom: 1px solid grey;
+    display: table-cell
+  }
+  
+  .secondPlanetTableChild {
+    border-bottom: 1px solid #ddd;
+    width: 200px;
+    padding: 5px;
+    border-bottom: 1px solid grey;
+    display: table-cell
+  }
+  

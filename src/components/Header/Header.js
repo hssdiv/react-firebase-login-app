@@ -3,6 +3,7 @@ import { AuthContext } from '../../context/AuthContext'
 import { DrawerContext } from '../../context/DrawerContext'
 import NavigationLink from './NavigationLink'
 import DrawerLink from './DrawerLink'
+import '../../Styles/Header.css';
 
 function Header() {
     const { currentUser, session } = useContext(AuthContext)
