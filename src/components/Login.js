@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
-import '../Styles/Login.css';
+import '../styles/Login.css';
 
 function Login() {
     const [errorMsg, setErrorMsg] = useState('')

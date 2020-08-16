@@ -1,5 +1,5 @@
 import React from 'react';
-import '../Styles/App.css';
+import '../styles/App.css';
 import Header from './Header/Header'
 import Main from './Main'
 import Public from './Public'

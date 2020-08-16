@@ -3,7 +3,7 @@ import { AuthContext } from '../../context/AuthContext'
 import { DrawerContext } from '../../context/DrawerContext'
 import NavigationLink from './NavigationLink'
 import DrawerLink from './DrawerLink'
-import '../../Styles/Header.css';
+import '../../styles/Header.css';
 
 function Header() {
     const { currentUser, session } = useContext(AuthContext)
@@ -51,11 +51,17 @@ function Header() {
                 {currentUser
                     ?
                     <>
+                        {drawerIsOpen?
+                        <>
+                        </>
+                        :
                         <span
                             style={{ fontSize: '30px', cursor: 'pointer', alignSelf: 'left' }}
                             onClick={() => handleOpenDrawer()}>
                             &#9776;
-                    </span>
+                        </span>
+                        }
+                        
                         <ul className='nav-links'>
                             <NavigationLink
                                 name='Private'
