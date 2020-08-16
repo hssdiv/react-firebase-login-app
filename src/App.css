@@ -1,0 +1,146 @@
+.App {
+  text-align: center;
+  transition: margin-left .5s;
+}
+
+nav{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  min-height: 10vh;
+  background: rgb(73, 79, 82);
+  color: white;
+}
+
+.nav-links{
+  width: 50%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  list-style: none;
+  color: white;
+}
+
+.nav-links:hover{
+  color: white;
+}
+
+.drawer-links{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  list-style: none;
+  color: #818181;
+}
+
+form {
+  width: 40%;
+  display: inline-block;
+  border: 3px solid #f1f1f1;
+}
+
+button {  
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 16px;
+}
+
+.planetTable {
+  display: inline-block;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 8px;
+  text-align: left;
+  border: 1px solid grey;
+  margin-top: 50px;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 5px;
+  border-bottom: 1px solid grey;
+}
+
+th {
+  padding: 5px;
+  color: white;
+  background-color: rgb(73, 79, 82);
+  border-bottom: 1px solid black;
+}
+
+td>div:hover {background-color:#f5f5f5;}
+
+
+.firstPlanetTableChild {
+  border-bottom: 1px solid #ddd;
+  width: 150px;
+  padding: 5px;
+  border-bottom: 1px solid grey;
+  display: table-cell
+}
+
+.secondPlanetTableChild {
+  border-bottom: 1px solid #ddd;
+  width: 200px;
+  padding: 5px;
+  border-bottom: 1px solid grey;
+  display: table-cell
+}
+
+.sidenav {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  
+  padding-top: 60px;
+}
+
+.sidenav > a, .sidenav > span {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  text-align: left;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav > a:hover, .sidenav > span:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+  cursor: pointer;
+}
