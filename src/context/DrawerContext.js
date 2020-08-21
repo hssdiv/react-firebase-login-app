@@ -5,9 +5,9 @@ export const DrawerContext = React.createContext();
 
 const reducer = (state, action) => {
     switch (action) {
-        case 'drawer_opened':
+        case 'DRAWER_OPENED':
             return state = true
-        case 'drawer_closed':
+        case 'DRAWER_CLOSED':
             return state = false
         default:
             return state
@@ -22,10 +22,10 @@ function DrawerProvider({ children }) {
 
     const drawerMethods = {
         closeDrawer: () => {
-            dispatch('drawer_closed')
+            dispatch('DRAWER_CLOSED')
         },
         openDrawer: () => {
-            dispatch('drawer_opened')
+            dispatch('DRAWER_OPENED')
         }
     }
 

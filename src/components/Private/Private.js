@@ -1,40 +1,44 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../context/AuthContext'
-import PlanetsTableLandscape from './PlanetsTableLandscape'
-import PlanetsTablePortrait from './PlanetsTablePortrait'
+import PlanetsTableLandscape from './PlanetsTable/PlanetsTableLandscape'
+import PlanetsTablePortrait from './PlanetsTable/PlanetsTablePortrait'
 import GetWidth from '../../ui/useWindowSize'
 import '../../styles/Private.css';
+import SimpleErrorMessage from '../SimpleErrorMessage'
 
 function Private() {
     const { currentUser } = useContext(AuthContext)
 
-    const [planetsResult, setPlanetsResult] = useState()
+    const [planetsResult, setPlanetsResult] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
+
 
     useEffect(() => {
         planets()
     }, [])
 
     const planets = async function fetchStarWarsPlanets() {
-        const response = await fetch('https://swapi.dev/api/planets/')
-
-        if (response) {
-            const result = await response.json();
-            console.log(result)
-            setPlanetsResult(result.results)
-        } else {
-            console.log('resonse is null')
-            setPlanetsResult(null)
-        }
+        try{
+            const response = await fetch('https://swapi.dev/api/planets/')
+            if (response) {
+                const result = await response.json();
+                //console.log(result)
+                setPlanetsResult(result.results)
+            } else {
+                console.log('planet resonse is null')
+                setErrorMessage("Coudn't load planets from server")
+                setPlanetsResult(null)
+            }
+        } catch {
+            setErrorMessage("Coudn't load planets from server")
+        }        
     }
 
     const currentScreenWidth = GetWidth()
 
-
     return (
         <div>
             <h1>Private page</h1>
-            {currentUser
-                ?
                 <>
                     <div>hello: {currentUser.email}</div>
                     {planetsResult
@@ -52,14 +56,9 @@ function Private() {
                             }
                         </>
                         :
-                        <>
-                        </>
+                        errorMessage && <SimpleErrorMessage error={errorMessage}/>                        
                     }
                 </>
-                :
-                <>
-                </>
-            }
         </div>
     )
 }
