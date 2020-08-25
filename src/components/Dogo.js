@@ -15,7 +15,7 @@ function Dogo() {
     }, [])
 
     useEffect(() => {
-        if ((myDogos.message) && (myDogos.message.includes("breeds"))) {
+        if ((myDogos.message) && (myDogos.message.includes('breeds'))) {
             const breedName = getFullBreedName(myDogos.message)
 
             if (breedName.includes('-')) {
@@ -30,7 +30,7 @@ function Dogo() {
     }, [myDogos])
 
     function getFullBreedName(url) {
-        const position = url.indexOf("breeds");
+        const position = url.indexOf('breeds');
         const start = position + 7
         const end = url.indexOf('/', start)
         return url.substring(start, end)
@@ -38,26 +38,36 @@ function Dogo() {
 
     return (
         <>
-        <div className='dogoCard' style={{position: 'relative'}}>  
-            {myDogos.error ?
-                <SimpleErrorMessage>
-                    error while loading dogo
-                </SimpleErrorMessage>
-                :
-                <>
-                    <img src={myDogos.message} alt=' ' className='dogoImage' />
-                    <div className='dogoCardText'>
-                        {myDogoBreed &&
-                            <div>breed: {myDogoBreed}</div>}
-                        {myDogoSubBreed &&
-                            <div>sub-breed: {myDogoSubBreed}</div>            
-                        }
-                    </div>
-                </>
-            }
-            {spinnerIsVisible &&
-            <Spinner style={{position: 'relative', top: '150px', left: '150px'}}/>}
-        </div>
+            <div
+                className='dogoCard'
+                style={{ position: 'relative' }}
+            >
+                {myDogos.error ?
+                    <SimpleErrorMessage
+                        error='error while loading dogo'
+                    />
+                    :
+                    <>
+                        <div
+                            className='dogoImage'
+                            style={{ backgroundImage: 'url(' + myDogos.message + ')' }}
+                        />
+                        <div
+                            className='dogoCardText'>
+                            {myDogoBreed &&
+                                <div>breed: {myDogoBreed}</div>}
+                            {myDogoSubBreed &&
+                                <div>sub-breed: {myDogoSubBreed}</div>
+                            }
+                        </div>
+                    </>
+                }
+                {spinnerIsVisible &&
+                    <Spinner 
+                        style={{ position: 'relative', top: '125px', left: '125px' }} 
+                    />
+                }
+            </div>
         </>
     )
 }

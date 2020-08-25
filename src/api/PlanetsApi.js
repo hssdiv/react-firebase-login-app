@@ -8,12 +8,12 @@ export const fetchStarWarsPlanets = async (setPlanetsResult, setErrorMessage, se
             setPlanetsResult(result.results)
         } else {
             console.log('planet resonse is null')
-            setErrorMessage("Coudn't load planets from server")
+            setErrorMessage('Coudn\'t load planets from server')
             setPlanetsResult(null)
             setSpinnerIsVisible(false)
         }
     } catch {   
         setSpinnerIsVisible(false)
-        setErrorMessage("Coudn't load planets from server")
+        setErrorMessage('Coudn\'t load planets from server')
     }        
 }

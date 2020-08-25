@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import '../styles/Login.css';
 import Spinner from './Spinner'
+import SimpleErrorMessage from './SimpleErrorMessage'
 
 function Login() {
     const [errorMsg, setErrorMsg] = useState('')
@@ -42,13 +43,14 @@ function Login() {
 
     return (
         <>
+        {spinnerIsVisible &&
+        <Spinner/>}
         <form 
             className='sign-form'
             onSubmit={handleLogin}>
-            <div
-                style={{ color: 'red' }}>
-                {errorMsg}
-            </div>
+            <SimpleErrorMessage 
+                error={errorMsg}
+            />
             <div
                 className='container'>
                 <h1>Login</h1>
@@ -58,8 +60,8 @@ function Login() {
                 <input
                     className='sign-input'
                     type='text'
-                    placeholder='Enter Username'
                     ref={inputRef}
+                    placeholder='Enter Email'
                     name='loginEmail'
                     required />
                 <label>
@@ -79,8 +81,6 @@ function Login() {
                 </button>
             </div>
         </form>
-        {spinnerIsVisible &&
-        <Spinner/>}
         </>
     )
 }

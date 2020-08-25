@@ -5,13 +5,13 @@ export const getRandomDogo = async (callback, setSpinnerIsVisible) => {
         setSpinnerIsVisible(false)
         if (response) {
             const result = await response.json();
-            if (result.status === "success") {
+            if (result.status === 'success') {
                 return callback(result);
             }
         }
     } catch {
         setSpinnerIsVisible(false)
-        return callback({error: "Coudn't get dogos from server"})
+        return callback({error: 'Coudn\'t get dogos from server'})
     }  
-    return callback({error: "Coudn't get dogos from server"})
+    return callback({error: 'Coudn\'t get dogos from server'})
 }

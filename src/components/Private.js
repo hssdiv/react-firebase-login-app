@@ -41,7 +41,10 @@ function Private() {
                             }
                         </>
                         :
-                        errorMessage && <SimpleErrorMessage error={errorMessage}/>                        
+                        errorMessage && 
+                        <SimpleErrorMessage 
+                            error={errorMessage}
+                        />
                     }
                     {spinnerIsVisible &&
                     <Spinner/>}

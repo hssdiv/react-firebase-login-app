@@ -7,9 +7,9 @@ import Private from './Private'
 import Login from './Login'
 import Next from './Next'
 import Registration from './Registration'
-import { Switch, Route } from "react-router-dom"
-import PrivateRoute from "./PrivateRoute"
-import Dogos from "./Dogos"
+import { Switch, Route } from 'react-router-dom'
+import PrivateRoute from './PrivateRoute'
+import Dogos from './Dogos'
 
 function MainApp(props) {
     return (
