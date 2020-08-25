@@ -10,6 +10,8 @@ function Header() {
     const { currentUser, session } = useContext(AuthContext)
     const { drawerIsOpen } = useContext(DrawerContext)
 
+    //style={ currentScreenWidth > 1066 ? {} : { maxWidth: '533px' } }  >
+
     return (
         <>
             {currentUser ?
