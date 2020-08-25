@@ -1,10 +1,10 @@
-form {
+.sign-form {
   width: 40%;
   display: inline-block;
   border: 3px solid #f1f1f1;
 }
 
-button {  
+.sign-button {  
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
@@ -14,11 +14,11 @@ button {
   width: 100%;
 }
 
-button:hover {
+.sign-button:hover {
   opacity: 0.8;
 }
 
-input[type=text], input[type=password] {
+.sign-input {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;

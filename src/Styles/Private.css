@@ -10,19 +10,19 @@
     border-collapse: collapse;
   }
   
-  td {
+  .planet-td {
     padding: 5px;
     border-bottom: 1px solid grey;
   }
   
-  th {
+  .planet-th {
     padding: 5px;
     color: white;
     background-color: rgb(73, 79, 82);
     border-bottom: 1px solid black;
   }
   
-  td>div:hover {background-color:#f5f5f5;}
+  .planet-div:hover {background-color:#f5f5f5;}
   
   .firstPlanetTableChild {
     border-bottom: 1px solid #ddd;

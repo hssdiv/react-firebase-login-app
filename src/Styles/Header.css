@@ -1,4 +1,4 @@
-nav{
+.nav-container{
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -63,3 +63,4 @@ nav{
   margin-left: 50px;
   cursor: pointer;
 }
+

@@ -4,7 +4,7 @@ import PlanetRowCellPortrait from './PlanetRowCellPortrait'
 function PlanetRowPortrait(props) {
     return (
         <tr style={{ textAlign: 'left' }}>
-            <td>
+            <td className='planet-td'>
                 <PlanetRowCellPortrait name='Name' value={props.name} />
                 <PlanetRowCellPortrait name='Population' value={props.population} />
                 <PlanetRowCellPortrait name='Climate' value={props.climate} />

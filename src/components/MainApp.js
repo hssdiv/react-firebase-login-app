@@ -3,12 +3,13 @@ import '../styles/App.css';
 import Header from './Header/Header'
 import Main from './Main'
 import Public from './Public'
-import Private from './Private/Private'
+import Private from './Private'
 import Login from './Login'
 import Next from './Next'
 import Registration from './Registration'
 import { Switch, Route } from "react-router-dom"
 import PrivateRoute from "./PrivateRoute"
+import Dogos from "./Dogos"
 
 function MainApp(props) {
     return (
@@ -21,6 +22,7 @@ function MainApp(props) {
                 <Route path='/login' component={Login}/>
                 <Route path='/registration' component={Registration}/>
                 <PrivateRoute path='/next' component={Next}/>
+                <PrivateRoute path='/dogos' component={Dogos}/>
             </Switch>
         </div>)
 }

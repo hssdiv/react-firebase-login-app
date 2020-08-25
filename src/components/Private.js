@@ -1,38 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../../context/AuthContext'
-import PlanetsTableLandscape from './PlanetsTable/PlanetsTableLandscape'
-import PlanetsTablePortrait from './PlanetsTable/PlanetsTablePortrait'
-import GetWidth from '../../ui/useWindowSize'
-import '../../styles/Private.css';
-import SimpleErrorMessage from '../SimpleErrorMessage'
+import { AuthContext } from '../context/AuthContext'
+import PlanetsTableLandscape from '../context/PlanetsTable/PlanetsTableLandscape'
+import PlanetsTablePortrait from '../context/PlanetsTable/PlanetsTablePortrait'
+import GetWidth from '../ui/useWindowSize'
+import '../styles/Private.css';
+import SimpleErrorMessage from './SimpleErrorMessage'
+import { fetchStarWarsPlanets } from '../api/PlanetsApi'
+import Spinner from './Spinner'
 
 function Private() {
     const { currentUser } = useContext(AuthContext)
 
     const [planetsResult, setPlanetsResult] = useState(null)
     const [errorMessage, setErrorMessage] = useState(null)
-
-
+    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
+    
     useEffect(() => {
-        planets()
+        fetchStarWarsPlanets(setPlanetsResult, setErrorMessage, setSpinnerIsVisible)
     }, [])
-
-    const planets = async function fetchStarWarsPlanets() {
-        try{
-            const response = await fetch('https://swapi.dev/api/planets/')
-            if (response) {
-                const result = await response.json();
-                //console.log(result)
-                setPlanetsResult(result.results)
-            } else {
-                console.log('planet resonse is null')
-                setErrorMessage("Coudn't load planets from server")
-                setPlanetsResult(null)
-            }
-        } catch {
-            setErrorMessage("Coudn't load planets from server")
-        }        
-    }
 
     const currentScreenWidth = GetWidth()
 
@@ -58,6 +43,8 @@ function Private() {
                         :
                         errorMessage && <SimpleErrorMessage error={errorMessage}/>                        
                     }
+                    {spinnerIsVisible &&
+                    <Spinner/>}
                 </>
         </div>
     )

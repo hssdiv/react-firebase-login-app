@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import Private from './Private/Private'
+import Private from './Private'
 import Public from './Public'
 import { useHistory, Route, Redirect } from 'react-router-dom'
 

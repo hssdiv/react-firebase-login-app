@@ -6,11 +6,11 @@ function PlanetsTableLandscape({ planets }) {
         <table className='planetTable'>
             <tbody>
                 <tr>
-                    <th>Name</th>
-                    <th>Population</th>
-                    <th>Climate</th>
-                    <th>Gravity</th>
-                    <th>Terrain</th>
+                    <th className='planet-th'>Name</th>
+                    <th className='planet-th'>Population</th>
+                    <th className='planet-th'>Climate</th>
+                    <th className='planet-th'>Gravity</th>
+                    <th className='planet-th'>Terrain</th>
                 </tr>
                 {planets.map(planet =>
                     <PlanetRowLandscape

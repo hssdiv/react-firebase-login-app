@@ -2,79 +2,47 @@ import React, { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
 import { DrawerContext } from '../../context/DrawerContext'
 import NavigationLink from './NavigationLink'
-import DrawerLink from './DrawerLink'
 import '../../styles/Header.css';
+import Drawer from './Drawer'
+import DrawerButton from './DrawerButton'
 
 function Header() {
     const { currentUser, session } = useContext(AuthContext)
-    const { drawerIsOpen, drawerMethods } = useContext(DrawerContext)
-
-    const handleOpenDrawer = () => {
-        drawerMethods.openDrawer()
-    }
-
-    const handleCloseDrawer = () => {
-        drawerMethods.closeDrawer()
-    }
+    const { drawerIsOpen } = useContext(DrawerContext)
 
     return (
         <>
-            {currentUser &&
-                (drawerIsOpen
-                    ?
-                    <div id='drawer' className='sidenav'>
-                        <span
-                            className='closebtn'
-                            onClick={() => handleCloseDrawer()}>
-                            &times;
-                        </span>
-                        <DrawerLink
-                            name='Next'
-                            path='/next'
-                        />
-                    </div>
-                    :
-                    <div id='drawer' className='sidenav' style={{ width: '0px' }}>
-                        <span
-                            className='closebtn'
-                            onClick={() => handleCloseDrawer()}>
-                            &times;
-                    </span>
-                        <DrawerLink
-                            name='Next'
-                            path='/next'
-                        />
-                    </div>
-                )
-            }
-            <nav>
-                {currentUser
-                    ?
-                    <>
-                        {drawerIsOpen?
-                        <>
-                        </>
+            {currentUser ?
+                <>
+                    {drawerIsOpen ?
+                        <Drawer />
                         :
-                        <span
-                            style={{ fontSize: '30px', cursor: 'pointer', alignSelf: 'left' }}
-                            onClick={() => handleOpenDrawer()}>
-                            &#9776;
-                        </span>
-                        }
-                        
-                        <ul className='nav-links'>
-                            <NavigationLink
-                                name='Private'
-                                path='/private'
-                            />
-                            <NavigationLink
-                                name='Log out'
-                                path='/login'
-                                onClick={() => session.userLogOut()}
-                            />
-                        </ul>
-                    </>
-                    : <ul className='nav-links'>
+                        <Drawer style={{ width: '0px' }} />
+                    }
+                    <nav className='nav-container'>
+                        <>
+                            {drawerIsOpen ?
+                                <DrawerButton style={{ visibility: 'hidden' }} />
+                                :
+                                <DrawerButton />
+                            }
+                            <ul className='nav-links'>
+                                <NavigationLink
+                                    name='Private'
+                                    path='/private'
+                                />
+                                <NavigationLink
+                                    name='Log out'
+                                    path='/login'
+                                    onClick={() => session.userLogOut()}
+                                />
+                            </ul>
+                        </>
+                    </nav>
+                </>
+                :
+                <nav className='nav-container'>
+                    <ul className='nav-links'>
                         <NavigationLink
                             name='Public'
                             path='/public'
@@ -88,8 +56,9 @@ function Header() {
                             path='/registration'
                         />
                     </ul>
-                }
-            </nav>
+
+                </nav>
+            }
         </>
     )
 }

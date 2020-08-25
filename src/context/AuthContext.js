@@ -27,7 +27,6 @@ function AuthProvider({ children }) {
         const unregisterAuthObserver = auth.onAuthStateChanged(user => {
             if (user) {
                 console.log('auth state change detected');
-                //TODO go to last page before refresh?
                 dispatch({ type: 'USER_LOGGED_IN', email: user.email })
             }
         })

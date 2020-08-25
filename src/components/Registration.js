@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useCallback, useState, useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'
+import Spinner from './Spinner'
 
 function Registration() {
     const [errorMsg, setErrorMsg] = useState('')
+    const [submitButtonIsDisabled, setSubmitButtonIsDisabled] = useState(false)
+    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
 
     const history = useHistory();
 
@@ -11,20 +14,31 @@ function Registration() {
 
     const handleRegistration = useCallback(async event => {
         event.preventDefault();
-        const { registration_email, registration_password, registration_repeat_password } = event.target.elements;
+        setSubmitButtonIsDisabled(true)
+        setSpinnerIsVisible(true)
+        const { registrationEmail, registrationPassword, registrationRepeatPassword } = event.target.elements;
 
-        if (registration_password.value === registration_repeat_password.value) {
-            const signUpResult = await session.userRegistered(registration_email.value, registration_password.value);
-            if (signUpResult) {
+        if (registrationPassword.value === registrationRepeatPassword.value) {
+            const signUpResult = await session.userRegistered(registrationEmail.value, registrationPassword.value);
+
+            setSpinnerIsVisible(false)
+            setSubmitButtonIsDisabled(false)
+            if (signUpResult.result) {
+                console.log(signUpResult)
                 setErrorMsg('')
                 history.push('/private')
             } else {
+                setSpinnerIsVisible(false)
+                setSubmitButtonIsDisabled(false)
                 setErrorMsg(signUpResult.errorMessage)
             }
 
         } else {
             setErrorMsg('passwords don\'t match')
+            setSpinnerIsVisible(false)
+            setSubmitButtonIsDisabled(false)
         }
+        
     }, [history, session])
 
     const inputRef = useRef(null);
@@ -34,7 +48,9 @@ function Registration() {
     }, [])
 
     return (
+        <>
         <form
+            className='sign-form'
             onSubmit={handleRegistration}
             style={{ border: '1px solid #ccc' }}>
             <div className='container'>
@@ -46,10 +62,11 @@ function Registration() {
                 </label>
 
                 <input
+                    className='sign-input'
                     type='text'
                     ref={inputRef}
                     placeholder='Enter Email'
-                    name='registration_email'
+                    name='registrationEmail'
                     required />
 
                 <label>
@@ -57,9 +74,10 @@ function Registration() {
                 </label>
 
                 <input
+                    className='sign-input'
                     type='password'
                     placeholder='Enter Password'
-                    name='registration_password'
+                    name='registrationPassword'
                     required />
 
                 <label>
@@ -67,18 +85,23 @@ function Registration() {
                 </label>
 
                 <input
+                    className='sign-input'
                     type='password'
                     placeholder='Repeat Password'
-                    name='registration_repeat_password'
+                    name='registrationRepeatPassword'
                     required />
 
                 <button
-                    type='submit'
-                    className='signupbtn'>
+                    className='sign-button'
+                    disabled={submitButtonIsDisabled}
+                    type='submit'>
                     Sign Up
             </button>
             </div>
         </form>
+        {spinnerIsVisible &&
+        <Spinner/>}
+        </>
     )
 }
 

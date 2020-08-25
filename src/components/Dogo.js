@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { getRandomDogo } from '../api/DogApi'
+import '../styles/Dogo.css'
+import Spinner from './Spinner'
+import SimpleErrorMessage from './SimpleErrorMessage'
 
 function Dogo() {
     const [myDogoBreed, setMyDogoBreed] = useState(null)
     const [myDogoSubBreed, setMyDogoSubBreed] = useState(null)
     const [myDogos, setMyDogos] = useState({})
+    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
 
     useEffect(() => {
-        getRandomDogo(setMyDogos)
+        getRandomDogo(setMyDogos, setSpinnerIsVisible)
     }, [])
 
     useEffect(() => {
-        console.log(myDogos.message)
-        console.log(myDogos)
         if ((myDogos.message) && (myDogos.message.includes("breeds"))) {
             const breedName = getFullBreedName(myDogos.message)
 
@@ -35,25 +37,28 @@ function Dogo() {
     }
 
     return (
-        <div>
+        <>
+        <div className='dogoCard' style={{position: 'relative'}}>  
             {myDogos.error ?
-                <div>
+                <SimpleErrorMessage>
                     error while loading dogo
-                </div>
+                </SimpleErrorMessage>
                 :
                 <>
-                    {myDogoBreed &&
-                        <div>breed: {myDogoBreed}</div>}
-                    {myDogoSubBreed ?
-                        <div>sub breed: {myDogoSubBreed}</div>
-                    :
-                        <div>not a sub breed</div>
-                    }
-                    <img src={myDogos.message} alt=' ' width="300" />
+                    <img src={myDogos.message} alt=' ' className='dogoImage' />
+                    <div className='dogoCardText'>
+                        {myDogoBreed &&
+                            <div>breed: {myDogoBreed}</div>}
+                        {myDogoSubBreed &&
+                            <div>sub-breed: {myDogoSubBreed}</div>            
+                        }
+                    </div>
                 </>
             }
-            
+            {spinnerIsVisible &&
+            <Spinner style={{position: 'relative', top: '150px', left: '150px'}}/>}
         </div>
+        </>
     )
 }
 

@@ -1,0 +1,37 @@
+.dogoCard {
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 8px;
+    width: 250px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    background-color: rgb(100, 107, 110);
+    color: white;
+  }
+
+  .dogoCardContainer {
+    max-width: 1066px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+  }
+  
+  .dogoCard:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    background-color: rgb(73, 79, 82);
+
+    transform: scale(1.05);
+    transition: 0.5s;
+  }
+
+  .dogoCardText {
+    padding: 4px;
+    padding-top: 12px;
+    vertical-align: bottom;
+  }
+
+  .dogoImage {
+    height: 250px;
+    width: 250px;
+    object-fit: scale-down;
+  }
