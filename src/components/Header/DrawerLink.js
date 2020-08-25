@@ -14,24 +14,13 @@ function DrawerLink({ path, onClick, name }) {
     }, [path, location.pathname])
 
     return (
-        <>
-            {currentlySelected ?
-                <Link
-                    className={'drawer-links'}
-                    to={path}
-                    onClick={onClick}
-                    style={{color: 'white'}}>
-                    {name}
-                </Link>
-                :
-                <Link
-                    className={'drawer-links'}
-                    to={path}
-                    onClick={onClick}>
-                    {name}
-                </Link>
-            }
-        </>
+        <Link
+            className={'drawer-links'}
+            to={path}
+            onClick={onClick}
+            style={currentlySelected ? { color: 'white' } : {} }>
+            {name}
+        </Link>
     )
 }
 
