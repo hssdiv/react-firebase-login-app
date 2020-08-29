@@ -36,3 +36,47 @@
     background-repeat: no-repeat;
     background-size: 250px;
   }
+
+  .dogoDeleteButton {
+    display: inline-block;
+    color: red;
+    position: relative;
+    transform: scale(2);
+    background-color: white;
+    top: -235px;
+    left: 100px;
+    opacity: 0.4;
+    cursor: pointer;
+    -moz-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+    -webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+    box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+  }
+
+  .dogoEditButton {
+    display: inline-block;
+    color: black;
+    position: relative;
+    transform: scale(2);
+    background-color: white;
+    top: -235px;
+    left: 80px;
+    opacity: 0.4;
+    cursor: pointer;
+    -moz-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+    -webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+    box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+  }
+
+  .dogoDeleteButton:hover, .dogoEditButton:hover {
+    opacity: 0.7;
+  }
+
+  .dogoAddButton {
+    display: inline-block;
+    color: white;
+    position: relative;
+    transform: scale(2);
+    
+    top: -240px;
+    cursor: pointer;
+  }
