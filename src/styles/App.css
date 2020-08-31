@@ -5,4 +5,10 @@
 
 .error {
   color: red;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.error:hover {
+  opacity: 1;
 }

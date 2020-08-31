@@ -1,38 +1,49 @@
 import React from 'react'
-import '../styles/ModalConfirm.css'
+import '../styles/ModalDeleteConfirm.css'
+import useEscape from '../ui/useEscape'
+import useEnter from '../ui/useEnter'
 
-function ConfirmDeleteModal(props) {
+function DogDeleteModal(props) {
 
     const handleCancelButton = () => {
-        props.callback('MODAL_CLOSED')
+        props.callback('MODAL_CLOSED');
     }
+
+    useEscape(handleCancelButton);
 
     const handleDeleteButton = () => {
-        props.callback('MODAL_DELETE_PRESSED')
+        props.callback('MODAL_DELETE_PRESSED');
     }
 
+    useEnter(handleDeleteButton);
+
     const handleCloseModal = () => {
-        props.callback('MODAL_CLOSED')
+        props.callback('MODAL_CLOSED');
     }
 
     return (
-        <div className='modalConfirm'>
+        <div
+            className='modalConfirm'
+        >
             <span
                 onClick={handleCloseModal}
                 className='modalClose'
-                title="Close Modal"
+                title='Close Modal'
             >
                 ×
             </span>
-            <form className="modalContent">
-                <div className="modalContainer">
-                    <h1>Delete Dogo</h1>
-                    <p>Are you sure you want to delete dogo?</p>
+            <form
+                className='modalContent'>
+                <div
+                    className='modalContainer'
+                >
+                    <h1>Delete Dog</h1>
+                    <p>Are you sure you want to delete dog?</p>
 
-                    <div className="modalClearfix" >
+                    <div className='modalClearfix' >
                         <button
                             className='modalCancelbtn'
-                            type="button"
+                            type='button'
                             onClick={handleCancelButton}
                         >
                             Cancel
@@ -51,4 +62,4 @@ function ConfirmDeleteModal(props) {
     )
 }
 
-export default ConfirmDeleteModal
+export default DogDeleteModal

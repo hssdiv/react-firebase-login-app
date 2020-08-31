@@ -9,7 +9,7 @@ import Next from './Next'
 import Registration from './Registration'
 import { Switch, Route } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
-import Dogos from './Dogos'
+import Dogs from './Dogs'
 
 function MainApp(props) {
     return (
@@ -22,7 +22,7 @@ function MainApp(props) {
                 <Route path='/login' component={Login}/>
                 <Route path='/registration' component={Registration}/>
                 <PrivateRoute path='/next' component={Next}/>
-                <PrivateRoute path='/dogos' component={Dogos}/>
+                <PrivateRoute path='/dogs' component={Dogs}/>
             </Switch>
         </div>)
 }

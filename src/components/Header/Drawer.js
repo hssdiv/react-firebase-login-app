@@ -21,8 +21,8 @@ function Drawer(props) {
                 path='/next'
             />
             <DrawerLink
-                name='Dogos'
-                path='/dogos'
+                name='Dogs'
+                path='/dogs'
             />
         </div>
     )

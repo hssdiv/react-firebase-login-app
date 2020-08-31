@@ -3,42 +3,53 @@
   opacity:1;
 }
 
-.modalCancelbtn {
-  float: left;
-  width: 50%;
+.inputLabel {
+  text-align: right;
+  clear: both;
+  float:left;
+  margin-right:15px;
 }
 
-.modalDeletebtn {
+.dogInput {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  float: left;
+}
+
+
+/* Add a color to the delete button */
+.modalConfirmButton {
   float: right;
-  width: 50%;
+  background-color: #4CAF50;
+  color: black;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100px;
+  opacity: 0.9;
+  background-color: #36f436;
 }
 
 /* Add a color to the cancel button */
-.modalCancelbtn {
+.modalCancelButton {
+  float: right;
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
   border: none;
   cursor: pointer;
-  width: 50%;
+  width: 100px;
   opacity: 0.9;
   background-color: #ccc;
   color: black;
 }
 
-/* Add a color to the delete button */
-.modalDeletebtn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 50%;
-  opacity: 0.9;
-  background-color: #f44336;
-}
 
 /* Add padding and center-align text to the container */
 .modalContainer {
@@ -55,7 +66,7 @@
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: #474e5d;
+  background-color: rgba(71, 78, 93, 0.9);
   padding-top: 50px;
 }
 
@@ -64,7 +75,7 @@
   background-color: #fefefe;
   margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
   border: 1px solid #888;
-  width: 50%; /* Could be more or less, depending on screen size */
+  width: 30%; /* Could be more or less, depending on screen size */
 }
 
 .modalClose {
@@ -84,14 +95,23 @@
 
 /* Clear floats */
 .modalClearfix::after {
-  content: "";
+  content: '';
   clear: both;
   display: table;
 }
 
 /* Change styles for cancel button and delete button on extra small screens */
-@media screen and (max-width: 300px) {
-  .modalCancelbtn, .modalDeletebtn {
+@media screen and (max-width: 900px) {
+  .modalCancelButton, .modalConfirmButton {
      width: 100%;
   }
+
+  .modalContent {
+    background-color: #fefefe;
+    margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 300px; /* Could be more or less, depending on screen size */
+  }
 }
+
+
