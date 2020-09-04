@@ -1,0 +1,16 @@
+
+.deleteDogsButton {  
+  background-color: red;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 8%;
+  
+  float:'center'
+}
+
+.deleteDogsButton:hover {
+  opacity: 0.8;
+}

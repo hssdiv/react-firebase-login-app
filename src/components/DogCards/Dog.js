@@ -4,10 +4,10 @@ import { DogDeleteModal, DogEditModal } from './'
 import Spinner from '../Spinner'
 import { firestore } from '../../config/firebase'
 
-export function Dog({ dogData }) {
+export function Dog({ dogData, handleChecked }) {
     const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
     const [editModalIsVisible, setEditModalIsVisible] = useState(false);
-    const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(false);
+    const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.checked);
 
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
 
@@ -20,6 +20,7 @@ export function Dog({ dogData }) {
     }
 
     const handleDeleteCheckBox = () => {
+        handleChecked(dogData.id, !deleteCheckBoxChecked)
         setDeleteCheckBoxChecked(!deleteCheckBoxChecked)
     }
 

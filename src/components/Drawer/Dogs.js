@@ -5,17 +5,20 @@ import { firestore } from '../../config/firebase'
 import Spinner from '../Spinner'
 import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext } from '../../context/DogsContext'
+import './../../styles/Dogs.css'
 
 export function Dogs() {
     const currentScreenWidth = GetWidth()
 
     const [Dogs, setDogs] = useState(null)
+    const [dogsChecked, setDogsChecked] = useState(null)
 
     const [randomDog, setRandomDog] = useState({})
 
-    const [deleteAllModalIsVisible, setDeleteAllModalIsVisible] = useState(false)
+    const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false)
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
     const [dogSpinnerIsVisible] = useState(false)
+    const [deleteCheckedEnabled, setDeleteCheckedEnabled] = useState(false)
 
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null)
 
@@ -30,6 +33,7 @@ export function Dogs() {
             setDogs(dogsData);
         })
         return dogListenerUnsubscribe
+        
     }, [])
 
     useEffect(() => {
@@ -42,9 +46,52 @@ export function Dogs() {
         console.log('changes to Dogs list:');
         if (Dogs) {
             console.log('Dogs size: ' + Dogs.length);
-        }
+            console.log(Dogs);
+            if (dogsChecked) {
 
+                const dogsMerged = Dogs.map(dog => {
+                    const vauDog = dogsChecked.find(checkedDog => checkedDog.id === dog.id)
+
+                    if (vauDog) {
+                        return {...vauDog, ...Dogs.find(dog => dog.id === vauDog.id)}
+                    } else {
+                        return dog
+                    }
+                });
+
+                setDogsChecked(dogsMerged);
+                console.log('dogsMerged')
+                console.log(dogsMerged);
+            } else {
+                const newDogsChecked = Dogs.map(dog => ({...dog, checked: false}))
+                setDogsChecked(newDogsChecked);
+                console.log('newDogsChecked')
+                console.log(newDogsChecked);
+            }
+            
+        }
     }, [Dogs])
+
+    const handleChecked = (id, isChecked) => {
+        const checkedDog = dogsChecked.find(dog => dog.id === id);
+        checkedDog.checked = isChecked;
+        const dogsWithCheckedDog = dogsChecked.map(dog => {
+            if (dog.id === checkedDog.id) {
+                return checkedDog;
+            } else {
+                return dog;
+            }
+        })
+        setDogsChecked(dogsWithCheckedDog)
+    }
+
+    useEffect(() => {
+        if ((dogsChecked) && (dogsChecked.find(checkedDog => checkedDog.checked === true))) {
+            setDeleteCheckedEnabled(true);
+        } else {
+            setDeleteCheckedEnabled(false);
+        }   
+    }, [dogsChecked])
 
     const handleAddDogOnClick = async () => {
         setSpinnerIsVisible(true)
@@ -64,19 +111,19 @@ export function Dogs() {
         }
     }
 
-    const handleDeleteAll = () => {
+    const handleDeleteButton = () => {
         //TODO confirm modal
-        setDeleteAllModalIsVisible(true)
+        setDeleteModalIsVisible(true)
     }
 
     const modalDeleteAllCallback = (result) => {
         switch (result) {
             case 'MODAL_CLOSED':
-                setDeleteAllModalIsVisible(false);
+                setDeleteModalIsVisible(false);
                 break;
             case 'MODAL_DELETE_PRESSED':
                 //setSpinnerIsVisible(true);
-                setDeleteAllModalIsVisible(false);
+                setDeleteModalIsVisible(false);
 
                 deleteCollection();
                 break;
@@ -87,18 +134,20 @@ export function Dogs() {
 
     function deleteCollection() {
         const db = firestore();
-    
-        db.collection('dogs').get().then(function(querySnapshot) {
+
+        db.collection('dogs').get().then(function (querySnapshot) {
             var batch = db.batch();
-    
-            querySnapshot.forEach(function(doc) {
-                batch.delete(doc.ref);
+
+            querySnapshot.forEach(function (doc) {
+                if (dogsChecked.find(checkedDog => ((doc.id === checkedDog.id))).checked) {
+                    batch.delete(doc.ref);
+                }                
             });
-    
+
             return batch.commit();
-      }).then(function() {
-          console.log('batch delete all dogs completed')
-      }); 
+        }).then(function () {
+            console.log('batch delete dog(s) completed')
+        });
     }
 
     useEffect(() => {
@@ -114,12 +163,12 @@ export function Dogs() {
             if (breedName.includes('-')) {
                 const [masterBreed, subBreed] = breedName.split('-')
                 const dog = { breed: masterBreed, subBreed: subBreed, imageUrl: randomDog.message }
-                console.log('adding dog' + dog.masterBreed + 'to firestore')
+                console.log('adding dog' + dog.breed + 'to firestore')
 
                 addDogToFs(dog);
             } else {
                 const dog = { breed: breedName, imageUrl: randomDog.message }
-                console.log('adding dog' + dog.masterBreed + 'to firestore')
+                console.log('adding dog ' + dog.breed + ' to firestore')
                 addDogToFs(dog);
             }
 
@@ -140,13 +189,17 @@ export function Dogs() {
 
     return (
         <div>
-            {deleteAllModalIsVisible &&
-            <DogDeleteModal
-                callback={modalDeleteAllCallback}
-            />
+            {deleteModalIsVisible &&
+                <DogDeleteModal
+                    callback={modalDeleteAllCallback}
+                />
             }
             <h1>Dogs page</h1>
-            <span style={{float:'center', color: 'red'}} onClick={handleDeleteAll}>delete all</span>
+            {deleteCheckedEnabled?   
+            <button className='deleteDogsButton' onClick={handleDeleteButton}>delete</button>
+            :
+            <button className='deleteDogsButton' disabled style={{opacity: '0.7'}}>delete</button>
+            }
             <SimpleErrorMessage
                 error={simpleErrorMsg}
             />
@@ -156,18 +209,19 @@ export function Dogs() {
                     currentScreenWidth > 1066 ?
                         {}
                         :
-                        currentScreenWidth > 533 ? 
-                        { maxWidth: '533px', position: 'center' }
-                        :
-                        { justifyContent: 'center' }
+                        currentScreenWidth > 533 ?
+                            { maxWidth: '533px', position: 'center' }
+                            :
+                            { justifyContent: 'center' }
                 }
             >
                 <AddDogCard onClick={handleAddDogOnClick} />
-                {Dogs &&
-                    Dogs.map(dog => (
+                {dogsChecked &&
+                    dogsChecked.map(dog => (
                         <Dog
                             key={dog.id}
                             dogData={dog}
+                            handleChecked={handleChecked}
                         />
                     ))}
                 {dogSpinnerIsVisible &&

@@ -8,7 +8,11 @@ import PrivateRoute from './PrivateRoute'
 
 function MainApp(props) {
     return (
-        <div id='App' className='App' style={props.style}>
+        <div 
+            id='App' 
+            className='App' 
+            style={props.style}
+        >
             <Header />
             <Switch>
                 <Route path='/' exact>
@@ -36,7 +40,8 @@ function MainApp(props) {
                     <Dogs/>
                 </PrivateRoute>
             </Switch>
-        </div>)
+        </div>
+    )
 }
 
 export default MainApp;
