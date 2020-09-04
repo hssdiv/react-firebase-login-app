@@ -1,15 +1,15 @@
-import React from 'react'
-import '../styles/Dog.css'
-import DogDeleteModal from './DogDeleteModal'
-import DogEditModal from './DogEditModal'
-import Spinner from './Spinner'
-import { firestore } from '../config/firebase'
+import React, { useState } from 'react'
+import '../../styles/Dog.css'
+import { DogDeleteModal, DogEditModal } from './'
+import Spinner from '../Spinner'
+import { firestore } from '../../config/firebase'
 
-function Dog(props) {
-    const [deletionModalIsVisible, setDeletionModalIsVisible] = React.useState(false);
-    const [editModalIsVisible, setEditModalIsVisible] = React.useState(false);
+export function Dog({ dogData }) {
+    const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
+    const [editModalIsVisible, setEditModalIsVisible] = useState(false);
+    const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(false);
 
-    const [spinnerIsVisible, setSpinnerIsVisible] = React.useState(false);
+    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
 
     const handleDeleteDogButton = () => {
         setDeletionModalIsVisible(true);
@@ -17,6 +17,10 @@ function Dog(props) {
 
     const handleEditDogButton = () => {
         setEditModalIsVisible(true);
+    }
+
+    const handleDeleteCheckBox = () => {
+        setDeleteCheckBoxChecked(!deleteCheckBoxChecked)
     }
 
     const modalDeleteCallback = (result) => {
@@ -28,15 +32,15 @@ function Dog(props) {
                 setSpinnerIsVisible(true);
                 setDeletionModalIsVisible(false);
 
-                const deleteDogFromFb = async () => {
+                const deleteDogFromFb = () => {
                     const db = firestore();
-                    await db.collection('dogs').doc(props.dogData.id).delete().then(function () {
+                    db.collection('dogs').doc(dogData.id).delete().then(function () {
                         console.log('Dog successfully deleted!');
                     }).catch(function (error) {
                         console.error('Error removing dog: ', error);
                     });
                 }
-                setTimeout(deleteDogFromFb, 1000);
+                deleteDogFromFb();
 
                 break;
             default:
@@ -51,10 +55,9 @@ function Dog(props) {
                 break;
             case 'MODAL_CONFIRM_PRESSED':
                 setEditModalIsVisible(false);
-
                 const db = firestore();
-                const updatedDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: props.dogData.imageUrl }
-                db.collection('dogs').doc(props.dogData.id).set(updatedDog);
+                const updatedDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: dogData.imageUrl }
+                db.collection('dogs').doc(dogData.id).set(updatedDog);
                 break;
             default:
                 return;
@@ -70,7 +73,7 @@ function Dog(props) {
             }
             {editModalIsVisible &&
                 <DogEditModal
-                    dogData={props.dogData}
+                    dogData={dogData}
                     callback={modalEditCallback}
                 />
             }
@@ -83,9 +86,25 @@ function Dog(props) {
                 <div
                     className='dogImage'
                     style={
-                        { backgroundImage: 'url(' + props.dogData.imageUrl + ')' }
+                        { backgroundImage: 'url(' + dogData.imageUrl + ')' }
                     }
                 />
+                {deleteCheckBoxChecked ?
+                <span
+                    className='dogDeleteCheckBox'
+                    style={{color: 'green', opacity: '1'}}
+                    onClick={handleDeleteCheckBox}
+                >
+                    &#9745;
+                </span>
+                :
+                <span
+                    className='dogDeleteCheckBox'
+                    onClick={handleDeleteCheckBox}
+                >
+                    &#9744;
+                </span>
+                }
                 <span
                     className='dogEditButton'
                     onClick={handleEditDogButton}
@@ -100,13 +119,13 @@ function Dog(props) {
                 </span>
                 <div
                     className='dogCardText'>
-                    {props.dogData && props.dogData.breed &&
+                    {dogData && dogData.breed &&
                         <div>
-                            breed: {props.dogData.breed}
+                            breed: {dogData.breed}
                         </div>}
-                    {props.dogData && props.dogData.subBreed &&
+                    {dogData && dogData.subBreed &&
                         <div>
-                            sub-breed: {props.dogData.subBreed}
+                            sub-breed: {dogData.subBreed}
                         </div>
                     }
                 </div>
@@ -125,5 +144,3 @@ function Dog(props) {
         </>
     )
 }
-
-export default Dog

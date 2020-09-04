@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from 'react'
-import Dog from './Dog'
-import GetWidth from '../ui/useWindowSize'
-import AddDogCard from './AddDogCard'
-import { firestore } from '../config/firebase'
-import { getRandomDog } from '../api/DogApi'
-import Spinner from './Spinner'
-import SimpleErrorMessage from './SimpleErrorMessage'
+import React, { useState, useEffect, useContext } from 'react'
+import { Dog, AddDogCard, DogDeleteModal } from '../DogCards/'
+import GetWidth from '../../ui/useWindowSize'
+import { firestore } from '../../config/firebase'
+import Spinner from '../Spinner'
+import SimpleErrorMessage from '../SimpleErrorMessage'
+import { DogsContext } from '../../context/DogsContext'
 
-//TODO modal edit(or edit inside?)
-//TODO move spinner outside so it can be hidden if error
-//TODO disappearing\appearing animation?
-
-function Dogs() {
+export function Dogs() {
     const currentScreenWidth = GetWidth()
 
     const [Dogs, setDogs] = useState(null)
 
     const [randomDog, setRandomDog] = useState({})
 
+    const [deleteAllModalIsVisible, setDeleteAllModalIsVisible] = useState(false)
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
     const [dogSpinnerIsVisible] = useState(false)
 
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null)
+
+    const { dogResult, dogMethods } = useContext(DogsContext)
 
     useEffect(() => {
         console.log('useEffect fetching Dogs from fs...')
@@ -35,6 +33,12 @@ function Dogs() {
     }, [])
 
     useEffect(() => {
+        if (dogResult) {
+            setRandomDog(dogResult)
+        }
+    }, [dogResult])
+
+    useEffect(() => {
         console.log('changes to Dogs list:');
         if (Dogs) {
             console.log('Dogs size: ' + Dogs.length);
@@ -42,9 +46,59 @@ function Dogs() {
 
     }, [Dogs])
 
-    const handleAddDogOnClick = () => {
+    const handleAddDogOnClick = async () => {
         setSpinnerIsVisible(true)
-        getRandomDog(setRandomDog, setSpinnerIsVisible)
+
+        const result = await dogMethods.getRandomDog()
+        if (result) {
+            if (result.loaded) {
+                setSpinnerIsVisible(false);
+                setSimpleErrorMsg(null);
+            } else {
+                setSpinnerIsVisible(false);
+                setSimpleErrorMsg('Coudn\'t get dogs from server');
+            }
+        } else {
+            setSpinnerIsVisible(false);
+            setSimpleErrorMsg('Coudn\'t get dogs from server');
+        }
+    }
+
+    const handleDeleteAll = () => {
+        //TODO confirm modal
+        setDeleteAllModalIsVisible(true)
+    }
+
+    const modalDeleteAllCallback = (result) => {
+        switch (result) {
+            case 'MODAL_CLOSED':
+                setDeleteAllModalIsVisible(false);
+                break;
+            case 'MODAL_DELETE_PRESSED':
+                //setSpinnerIsVisible(true);
+                setDeleteAllModalIsVisible(false);
+
+                deleteCollection();
+                break;
+            default:
+                return;
+        }
+    }
+
+    function deleteCollection() {
+        const db = firestore();
+    
+        db.collection('dogs').get().then(function(querySnapshot) {
+            var batch = db.batch();
+    
+            querySnapshot.forEach(function(doc) {
+                batch.delete(doc.ref);
+            });
+    
+            return batch.commit();
+      }).then(function() {
+          console.log('batch delete all dogs completed')
+      }); 
     }
 
     useEffect(() => {
@@ -86,7 +140,13 @@ function Dogs() {
 
     return (
         <div>
+            {deleteAllModalIsVisible &&
+            <DogDeleteModal
+                callback={modalDeleteAllCallback}
+            />
+            }
             <h1>Dogs page</h1>
+            <span style={{float:'center', color: 'red'}} onClick={handleDeleteAll}>delete all</span>
             <SimpleErrorMessage
                 error={simpleErrorMsg}
             />
@@ -96,15 +156,18 @@ function Dogs() {
                     currentScreenWidth > 1066 ?
                         {}
                         :
-                        { maxWidth: '533px' }
+                        currentScreenWidth > 533 ? 
+                        { maxWidth: '533px', position: 'center' }
+                        :
+                        { justifyContent: 'center' }
                 }
             >
                 <AddDogCard onClick={handleAddDogOnClick} />
                 {Dogs &&
                     Dogs.map(dog => (
-                        <Dog 
-                            key={dog.id} 
-                            dogData={dog} 
+                        <Dog
+                            key={dog.id}
+                            dogData={dog}
                         />
                     ))}
                 {dogSpinnerIsVisible &&
@@ -117,5 +180,3 @@ function Dogs() {
         </div>
     )
 }
-
-export default Dogs

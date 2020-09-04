@@ -1,13 +1,16 @@
 import React from 'react'
-import AuthProvider from './AuthContext'
-import DrawerProvider from './DrawerContext'
+import {AuthProvider, DrawerProvider, PlanetsProvider, DogsProvider} from './'
 
 function MainProvider({ children }) {
     return (
         <div>
             <AuthProvider>
                 <DrawerProvider>
-                    {children}
+                    <PlanetsProvider>
+                        <DogsProvider>
+                            {children}
+                        </DogsProvider>
+                    </PlanetsProvider>
                 </DrawerProvider>
             </AuthProvider>
         </div>

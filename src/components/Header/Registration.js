@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useCallback, useState, useContext } from 'react'
 import { useHistory } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'
-import Spinner from './Spinner'
+import { AuthContext } from '../../context/AuthContext'
+import Spinner from './../Spinner'
 
-function Registration() {
+export function Registration() {
     const [errorMsg, setErrorMsg] = useState('')
     const [submitButtonIsDisabled, setSubmitButtonIsDisabled] = useState(false)
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
@@ -104,5 +104,3 @@ function Registration() {
         </>
     )
 }
-
-export default Registration

@@ -1,19 +1,15 @@
-export const fetchStarWarsPlanets = async (setPlanetsResult, setErrorMessage, setSpinnerIsVisible) => {
+export const fetchStarWarsPlanets = async () => {
     try{
-        setSpinnerIsVisible(true)
         const response = await fetch('https://swapi.dev/api/planets/')
         if (response) {
             const result = await response.json();
-            setSpinnerIsVisible(false)
-            setPlanetsResult(result.results)
+            return result.results
         } else {
             console.log('planet resonse is null')
-            setErrorMessage('Coudn\'t load planets from server')
-            setPlanetsResult(null)
-            setSpinnerIsVisible(false)
+            return null;
         }
     } catch {   
-        setSpinnerIsVisible(false)
-        setErrorMessage('Coudn\'t load planets from server')
+        console.log('error in loadgin planets')
+        return null;
     }        
 }

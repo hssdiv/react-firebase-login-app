@@ -1,7 +1,8 @@
 import React from 'react'
 import PlanetRowLandscape from './PlanetRowLandscape'
+import { formatBigNumber } from '../../util/BigNumberFormat'
 
-function PlanetsTableLandscape({ planets }) {
+function PlanetsTableLandscape({ planets }) {   
     return (
         <table className='planetTable'>
             <tbody>
@@ -16,7 +17,7 @@ function PlanetsTableLandscape({ planets }) {
                     <PlanetRowLandscape
                         key={planet.name}
                         name={planet.name}
-                        population={planet.population}
+                        population={formatBigNumber(planet.population)}
                         climate={planet.climate}
                         gravity={planet.gravity}
                         terrain={planet.terrain}

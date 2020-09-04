@@ -1,24 +1,24 @@
 import React from 'react'
-import '../styles/ModalDeleteConfirm.css'
-import useEscape from '../ui/useEscape'
-import useEnter from '../ui/useEnter'
+import '../../styles/ModalDeleteConfirm.css'
+import useEscape from '../../ui/useEscape'
+import useEnter from '../../ui/useEnter'
 
-function DogDeleteModal(props) {
+export function DogDeleteModal({callback}) {
 
     const handleCancelButton = () => {
-        props.callback('MODAL_CLOSED');
+        callback('MODAL_CLOSED');
     }
 
     useEscape(handleCancelButton);
 
     const handleDeleteButton = () => {
-        props.callback('MODAL_DELETE_PRESSED');
+        callback('MODAL_DELETE_PRESSED');
     }
 
     useEnter(handleDeleteButton);
 
     const handleCloseModal = () => {
-        props.callback('MODAL_CLOSED');
+        callback('MODAL_CLOSED');
     }
 
     return (
@@ -38,7 +38,7 @@ function DogDeleteModal(props) {
                     className='modalContainer'
                 >
                     <h1>Delete Dog</h1>
-                    <p>Are you sure you want to delete dog?</p>
+                    <p>Are you sure you want to delete dog(s)?</p>
 
                     <div className='modalClearfix' >
                         <button
@@ -61,5 +61,3 @@ function DogDeleteModal(props) {
         </div>
     )
 }
-
-export default DogDeleteModal

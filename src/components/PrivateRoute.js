@@ -1,29 +1,29 @@
-import React, { useContext } from 'react'
+import React, { useContext, cloneElement, Children } from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
-function PrivateRoute({ component: Component, ...rest }) {
+function PrivateRoute({ children, location, ...rest }) {
     const { currentUser } = useContext(AuthContext)
 
     return (
         <Route
             {...rest}
-            render={props => {
-                if (currentUser) {
-                    return <Component {...props} />;
-                }
-                else {
-                    console.log('no user found, private route is redirecting main page')
-                    return <Redirect to={
-                        {
-                            pathname: '/',
-                            state: {
-                                from: props.location
+            render={() =>
+                currentUser ?
+                    Children.map(children, child => cloneElement(child, { ...child.props }))
+                    :
+                    <>
+                        {console.log('no user found, private route is redirecting login page from: ' + location.pathname)}
+                        <Redirect to={
+                            {
+                                pathname: '/',
+                                state: {
+                                    from: location.pathname
+                                }
                             }
-                        }
-                    } />
-                }
-            }
+                        } />
+                    </>
+
             }
         />
     )

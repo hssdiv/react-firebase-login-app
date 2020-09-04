@@ -14,7 +14,7 @@ const reducer = (state, action) => {
     }
 }
 
-function DrawerProvider({ children }) {
+export function DrawerProvider({ children }) {
     const initialState = GetWidth() > 1000
     //const initialState = true
 
@@ -40,6 +40,3 @@ function DrawerProvider({ children }) {
         </DrawerContext.Provider>
     );
 }
-
-
-export default DrawerProvider

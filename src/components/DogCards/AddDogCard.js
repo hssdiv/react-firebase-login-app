@@ -1,7 +1,7 @@
 import React from 'react'
-import '../styles/Dog.css'
+import '../../styles/Dog.css'
 
-function AddDogCard(props) {
+export function AddDogCard(props) {
     return (
         <div
             className='dogCard'
@@ -29,5 +29,3 @@ function AddDogCard(props) {
         </div>
     )
 }
-
-export default AddDogCard

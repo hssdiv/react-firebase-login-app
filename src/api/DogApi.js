@@ -1,17 +1,14 @@
-export const getRandomDog = async (callback, setSpinnerIsVisible) => {
+export const getRandomDog = async () => {
     try{
-        setSpinnerIsVisible(true)
         const response = await fetch('https://dog.ceo/api/breeds/image/random')
-        setSpinnerIsVisible(false)
         if (response) {
             const result = await response.json();
             if (result.status === 'success') {
-                return callback(result);
+                return result;
             }
         }
     } catch {
-        setSpinnerIsVisible(false)
-        return callback({error: 'Coudn\'t get dogs from server'})
+        return null;
     }  
-    return callback({error: 'Coudn\'t get dogs from server'})
+    return null;
 }

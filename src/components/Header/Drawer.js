@@ -24,6 +24,10 @@ function Drawer(props) {
                 name='Dogs'
                 path='/dogs'
             />
+            <DrawerLink
+                name='Planets'
+                path='/planets'
+            />
         </div>
     )
 }

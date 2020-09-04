@@ -1,17 +1,17 @@
-import React from 'react'
-import '../styles/ModalEdit.css'
-import SimpleErrorMessage from './SimpleErrorMessage';
-import useEscape from '../ui/useEscape'
-import useEnter from '../ui/useEnter'
+import React, { useState } from 'react'
+import '../../styles/ModalEdit.css'
+import SimpleErrorMessage from '../SimpleErrorMessage'
+import useEscape from '../../ui/useEscape'
+import useEnter from '../../ui/useEnter'
 
-function DogEditModal(props) {
-    const [breed, setBreed] = React.useState(props.dogData.breed);
-    const [subBreed, setSubBreed] = React.useState(props.dogData.subBreed ? props.dogData.subBreed : '');
-    const [error, setError] = React.useState(null);
+export function DogEditModal({dogData, callback}) {
+    const [breed, setBreed] = useState(dogData.breed);
+    const [subBreed, setSubBreed] = useState(dogData.subBreed ? dogData.subBreed : '');
+    const [error, setError] = useState(null);
 
     const handleCancelButton = () => {
         setError(null);
-        props.callback({ action: 'MODAL_CLOSED' });
+        callback({ action: 'MODAL_CLOSED' });
     }
 
     useEscape(handleCancelButton);
@@ -24,14 +24,14 @@ function DogEditModal(props) {
             if (event) {
                 event.preventDefault();
             }
-            props.callback({ action: 'MODAL_CONFIRM_PRESSED', breed: breed, subBreed: subBreed });
+            callback({ action: 'MODAL_CONFIRM_PRESSED', breed: breed, subBreed: subBreed });
         }
     }
 
     useEnter(handleConfirmButton);
 
     const handleCloseModal = () => {
-        props.callback({ action: 'MODAL_CLOSED' });
+        callback({ action: 'MODAL_CLOSED' });
     }
 
     const errorCallback = (result) => {
@@ -103,5 +103,3 @@ function DogEditModal(props) {
         </div>
     )
 }
-
-export default DogEditModal

@@ -4,26 +4,39 @@ import MainProvider from './context/MainProvider'
 import { DrawerContext } from './context/DrawerContext'
 import GetWidth from './ui/useWindowSize'
 import MainApp from './components/MainApp'
+import { AuthContext } from './context/AuthContext';
 
+//TODO simplify that scary thing
 function App() {
     const currentScreenWidth = GetWidth()
 
     return (
         <MainProvider>
             <BrowserRouter>
-                <DrawerContext.Consumer>
-                    {
-                        drawer => {
-                            return (
-                                (drawer.drawerIsOpen && (currentScreenWidth > 1000))
-                                    ?
-                                    <MainApp style={{ marginLeft: '250px' }} />
-                                    :
-                                    <MainApp />
-                            )
+                    <AuthContext.Consumer>
+                        {
+                            user => {
+                                return (
+                                    user.currentUser ?
+                                        <DrawerContext.Consumer>
+                                            {
+                                                drawer => {
+                                                    return (
+                                                        (drawer.drawerIsOpen && (currentScreenWidth > 1000))
+                                                            ?
+                                                            <MainApp style={{ marginLeft: '250px' }} />
+                                                            :
+                                                            <MainApp />
+                                                    )
+                                                }
+                                            }
+                                        </DrawerContext.Consumer>
+                                        :
+                                        <MainApp />
+                                )
+                            }
                         }
-                    }
-                </DrawerContext.Consumer>
+                    </AuthContext.Consumer>
             </BrowserRouter>
         </MainProvider>
     );

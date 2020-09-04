@@ -1,7 +1,10 @@
 import React from 'react'
 import PlanetRowPortrait from './PlanetRowPortrait'
+import { formatBigNumber } from '../../util/BigNumberFormat'
 
 function PlanetsTablePortrait({ planets }) {
+    
+
     return (
         <table  className='planetTable' style={{ borderCollapse: 'collapse', borderSpacing: '5px' }}>
             <tbody>
@@ -9,7 +12,7 @@ function PlanetsTablePortrait({ planets }) {
                     <PlanetRowPortrait
                         key={planet.name}
                         name={planet.name}
-                        population={planet.population}
+                        population={formatBigNumber(planet.population)}
                         climate={planet.climate}
                         gravity={planet.gravity}
                         terrain={planet.terrain}

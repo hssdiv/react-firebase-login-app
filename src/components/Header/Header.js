@@ -6,7 +6,7 @@ import '../../styles/Header.css';
 import Drawer from './Drawer'
 import DrawerButton from './DrawerButton'
 
-function Header() {
+export function Header() {
     const { currentUser, session } = useContext(AuthContext)
     const { drawerIsOpen } = useContext(DrawerContext)
 
@@ -62,5 +62,3 @@ function Header() {
         </>
     )
 }
-
-export default Header

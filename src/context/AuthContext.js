@@ -19,7 +19,7 @@ const reducer = (state, action) => {
 
 export const AuthContext = React.createContext();
 
-function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
     const initialState = null;
     const [currentUser, dispatch] = useReducer(reducer, initialState)
 
@@ -70,6 +70,3 @@ function AuthProvider({ children }) {
         </AuthContext.Provider>
     );
 }
-
-
-export default AuthProvider
