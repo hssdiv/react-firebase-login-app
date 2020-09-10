@@ -5,7 +5,7 @@ import '../../styles/Login.css';
 import Spinner from './../Spinner'
 import SimpleErrorMessage from './../SimpleErrorMessage'
 
-export function Login() {
+export function Login(props) {
     const [errorMsg, setErrorMsg] = useState('')
     const [submitButtonIsDisabled, setSubmitButtonIsDisabled] = useState(false)
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
@@ -33,12 +33,16 @@ export function Login() {
 
     const inputRef = useRef(null);
 
+    let location = useLocation();
+
     useEffect(() => {
+        console.log('location in login.js is:');
+        console.log(location);
         const timeout = setTimeout(() => { setUserIsLoaded(true) }, 500)
         return () => clearTimeout(timeout)
-    }, [])
+    }, [location])
 
-    let location = useLocation();
+    
 
     useEffect(() => {
         if (currentUser) {

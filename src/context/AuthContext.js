@@ -25,8 +25,8 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const unregisterAuthObserver = auth.onAuthStateChanged(user => {
+            console.log('auth state change detected');
             if (user) {
-                console.log('auth state change detected');
                 dispatch({ type: 'USER_LOGGED_IN', email: user.email })
             }
         })

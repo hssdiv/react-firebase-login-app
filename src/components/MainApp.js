@@ -7,6 +7,7 @@ import { Switch, Route } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
 
 function MainApp(props) {
+
     return (
         <div 
             id='App' 

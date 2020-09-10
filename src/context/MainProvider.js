@@ -1,5 +1,5 @@
 import React from 'react'
-import {AuthProvider, DrawerProvider, PlanetsProvider, DogsProvider} from './'
+import { AuthProvider, DrawerProvider, PlanetsProvider, DogsProvider } from './'
 
 function MainProvider({ children }) {
     return (

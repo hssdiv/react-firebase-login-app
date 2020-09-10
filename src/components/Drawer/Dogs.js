@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Dog, AddDogCard, DogDeleteModal } from '../DogCards/'
 import GetWidth from '../../ui/useWindowSize'
-import { firestore } from '../../config/firebase'
+import auth, { firestore, storage } from '../../config/firebase'
 import Spinner from '../Spinner'
 import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext } from '../../context/DogsContext'
 import './../../styles/Dogs.css'
+import { DogAddModal } from '../DogCards/DogAddModal'
 
 export function Dogs() {
     const currentScreenWidth = GetWidth()
@@ -16,6 +17,7 @@ export function Dogs() {
     const [randomDog, setRandomDog] = useState({})
 
     const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false)
+    const [dogAddModalVisible, setDogAddModalVisible] = useState(false)
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
     const [dogSpinnerIsVisible] = useState(false)
     const [deleteCheckedEnabled, setDeleteCheckedEnabled] = useState(false)
@@ -43,7 +45,7 @@ export function Dogs() {
     }, [dogResult])
 
     useEffect(() => {
-        console.log('changes to Dogs list:');
+        console.log('detected changes to Dogs list:');
         if (Dogs) {
             console.log('Dogs size: ' + Dogs.length);
             console.log(Dogs);
@@ -70,6 +72,7 @@ export function Dogs() {
             }
             
         }
+    // eslint-disable-next-line
     }, [Dogs])
 
     const handleChecked = (id, isChecked) => {
@@ -93,26 +96,11 @@ export function Dogs() {
         }   
     }, [dogsChecked])
 
-    const handleAddDogOnClick = async () => {
-        setSpinnerIsVisible(true)
-
-        const result = await dogMethods.getRandomDog()
-        if (result) {
-            if (result.loaded) {
-                setSpinnerIsVisible(false);
-                setSimpleErrorMsg(null);
-            } else {
-                setSpinnerIsVisible(false);
-                setSimpleErrorMsg('Coudn\'t get dogs from server');
-            }
-        } else {
-            setSpinnerIsVisible(false);
-            setSimpleErrorMsg('Coudn\'t get dogs from server');
-        }
+    const handleAddDogOnClick = () => {
+        setDogAddModalVisible(true);
     }
 
     const handleDeleteButton = () => {
-        //TODO confirm modal
         setDeleteModalIsVisible(true)
     }
 
@@ -122,9 +110,7 @@ export function Dogs() {
                 setDeleteModalIsVisible(false);
                 break;
             case 'MODAL_DELETE_PRESSED':
-                //setSpinnerIsVisible(true);
                 setDeleteModalIsVisible(false);
-
                 deleteCollection();
                 break;
             default:
@@ -187,6 +173,50 @@ export function Dogs() {
         return url.substring(start, end)
     }
 
+    const addModalCallback = async (result) => {
+        setDogAddModalVisible(false);
+        switch (result.action) {
+            case 'MODAL_CLOSED':
+                setDogAddModalVisible(false);
+                break;
+            case 'MODAL_CONFIRM_PRESSED':
+
+
+            if (result.type === 'RANDOM') {
+                setSpinnerIsVisible(true)
+
+                const result = await dogMethods.getRandomDog()
+                if (result) {
+                    if (result.loaded) {
+                        setSpinnerIsVisible(false);
+                        setSimpleErrorMsg(null);
+                    } else {
+                        setSpinnerIsVisible(false);
+                        setSimpleErrorMsg('Coudn\'t get dogs from server');
+                    }
+                } else {
+                    setSpinnerIsVisible(false);
+                    setSimpleErrorMsg('Coudn\'t get dogs from server');
+                }
+            } else {
+                const storageRef = storage.ref();
+                console.log(auth.currentUser.uid)
+                const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
+                await fileRef.put(result.dogPicture);
+
+                const fileUrl = await fileRef.getDownloadURL()
+                
+                const db = firestore();
+                const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
+                db.collection('dogs').add(addCustomdDog);
+            }
+ 
+                break;
+            default:
+                return;
+        }
+    }
+
     return (
         <div>
             {deleteModalIsVisible &&
@@ -195,6 +225,11 @@ export function Dogs() {
                 />
             }
             <h1>Dogs page</h1>
+
+
+            {dogAddModalVisible &&
+            <DogAddModal callback={addModalCallback}/>}
+
             {deleteCheckedEnabled?   
             <button className='deleteDogsButton' onClick={handleDeleteButton}>delete</button>
             :

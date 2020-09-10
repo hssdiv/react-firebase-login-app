@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { Route, Redirect, useLocation } from 'react-router-dom'
 
-function Main() {
+function Main(props) {
     const { currentUser } = useContext(AuthContext)
 
     let location = useLocation();
