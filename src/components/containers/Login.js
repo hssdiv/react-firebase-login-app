@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
 import '../../styles/Login.css';
-import Spinner from './../Spinner'
-import SimpleErrorMessage from './../SimpleErrorMessage'
+import Spinner from '../Spinner'
+import SimpleErrorMessage from '../SimpleErrorMessage'
 
 export function Login(props) {
     const [errorMsg, setErrorMsg] = useState('')

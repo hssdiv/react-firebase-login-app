@@ -1,8 +1,7 @@
 import React from 'react';
 import '../styles/App.css';
-import { Header, Public, Private, Login, Registration} from './Header'
-import Main from './Main'
-import { Next, Planets, Dogs } from './Drawer';
+import { Public, Private, Login, Registration, Main, Next, Planets, Dogs } from './containers'
+import {Header} from './Header'
 import { Switch, Route } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
 

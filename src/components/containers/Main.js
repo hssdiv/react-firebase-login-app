@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
-import { AuthContext } from '../context/AuthContext'
+import { AuthContext } from '../../context/AuthContext'
 import { Route, Redirect, useLocation } from 'react-router-dom'
 
-function Main(props) {
+export function Main(props) {
     const { currentUser } = useContext(AuthContext)
 
     let location = useLocation();
@@ -39,5 +39,3 @@ function Main(props) {
 
     )
 }
-
-export default Main

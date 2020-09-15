@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Dog, AddDogCard, DogDeleteModal } from '../DogCards/'
+import { Dog, AddDogCard, DogDeleteModal } from '../DogCards'
 import GetWidth from '../../ui/useWindowSize'
 import auth, { firestore, storage } from '../../config/firebase'
 import Spinner from '../Spinner'
@@ -35,7 +35,7 @@ export function Dogs() {
             setDogs(dogsData);
         })
         return dogListenerUnsubscribe
-        
+
     }, [])
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export function Dogs() {
                     const vauDog = dogsChecked.find(checkedDog => checkedDog.id === dog.id)
 
                     if (vauDog) {
-                        return {...vauDog, ...Dogs.find(dog => dog.id === vauDog.id)}
+                        return { ...vauDog, ...Dogs.find(dog => dog.id === vauDog.id) }
                     } else {
                         return dog
                     }
@@ -65,14 +65,14 @@ export function Dogs() {
                 console.log('dogsMerged')
                 console.log(dogsMerged);
             } else {
-                const newDogsChecked = Dogs.map(dog => ({...dog, checked: false}))
+                const newDogsChecked = Dogs.map(dog => ({ ...dog, checked: false }))
                 setDogsChecked(newDogsChecked);
                 console.log('newDogsChecked')
                 console.log(newDogsChecked);
             }
-            
+
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [Dogs])
 
     const handleChecked = (id, isChecked) => {
@@ -93,7 +93,7 @@ export function Dogs() {
             setDeleteCheckedEnabled(true);
         } else {
             setDeleteCheckedEnabled(false);
-        }   
+        }
     }, [dogsChecked])
 
     const handleAddDogOnClick = () => {
@@ -127,7 +127,12 @@ export function Dogs() {
             querySnapshot.forEach(function (doc) {
                 if (dogsChecked.find(checkedDog => ((doc.id === checkedDog.id))).checked) {
                     batch.delete(doc.ref);
-                }                
+
+
+                    //delete from storage
+                    const imageRef = storage.refFromURL(doc.data().imageUrl)
+                    imageRef.delete();
+                }
             });
 
             return batch.commit();
@@ -182,40 +187,57 @@ export function Dogs() {
             case 'MODAL_CONFIRM_PRESSED':
 
 
-            if (result.type === 'RANDOM') {
-                setSpinnerIsVisible(true)
+                if (result.type === 'RANDOM') {
+                    setSpinnerIsVisible(true)
 
-                const result = await dogMethods.getRandomDog()
-                if (result) {
-                    if (result.loaded) {
-                        setSpinnerIsVisible(false);
-                        setSimpleErrorMsg(null);
+                    const result = await dogMethods.getRandomDog()
+                    if (result) {
+                        if (result.loaded) {
+                            setSpinnerIsVisible(false);
+                            setSimpleErrorMsg(null);
+                        } else {
+                            setSpinnerIsVisible(false);
+                            setSimpleErrorMsg('Coudn\'t get dogs from server');
+                        }
                     } else {
                         setSpinnerIsVisible(false);
                         setSimpleErrorMsg('Coudn\'t get dogs from server');
                     }
                 } else {
-                    setSpinnerIsVisible(false);
-                    setSimpleErrorMsg('Coudn\'t get dogs from server');
-                }
-            } else {
-                const storageRef = storage.ref();
-                console.log(auth.currentUser.uid)
-                const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
-                await fileRef.put(result.dogPicture);
+                    const storageRef = storage.ref();
+                    console.log(auth.currentUser.uid)
+                    const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
+                    var task = fileRef.put(result.dogPicture);
 
-                const fileUrl = await fileRef.getDownloadURL()
-                
-                const db = firestore();
-                const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
-                db.collection('dogs').add(addCustomdDog);
-            }
- 
+                    task.on('state_changed',
+                        function progress(snapshot) {
+                            let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            console.log('uploaded ' + percentage + '%');
+                            progressRef.current.value = percentage;
+                        },
+
+                        function error(err) {
+                            console.error('upload progress error:' + err)
+                        },
+
+                        async function complete() {
+                            console.log('upload complete');
+
+                            const fileUrl = await fileRef.getDownloadURL()
+
+                            const db = firestore();
+                            const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
+                            db.collection('dogs').add(addCustomdDog);
+                        });
+                }
+
                 break;
             default:
                 return;
         }
     }
+
+    const progressRef = React.useRef(null)
 
     return (
         <div>
@@ -228,13 +250,22 @@ export function Dogs() {
 
 
             {dogAddModalVisible &&
-            <DogAddModal callback={addModalCallback}/>}
+                <DogAddModal callback={addModalCallback} />}
 
-            {deleteCheckedEnabled?   
-            <button className='deleteDogsButton' onClick={handleDeleteButton}>delete</button>
-            :
-            <button className='deleteDogsButton' disabled style={{opacity: '0.7'}}>delete</button>
+            {deleteCheckedEnabled ?
+                <button className='deleteDogsButton' onClick={handleDeleteButton}>delete</button>
+                :
+                <button className='deleteDogsButton' disabled style={{ opacity: '0.7' }}>delete</button>
             }
+            <div>
+                <progress
+                    className="progressbar"
+                    value="0"
+                    max="100"
+                    ref={progressRef}
+                >0%
+            </progress>
+            </div>
             <SimpleErrorMessage
                 error={simpleErrorMsg}
             />

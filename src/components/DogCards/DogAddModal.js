@@ -160,7 +160,7 @@ export function DogAddModal({ callback }) {
                         error={error}
                     />
 
-                    {formEnabled ?
+                    {formEnabled &&
                         <>
                             <label className='inputLabel'>
                                 Breed:
@@ -193,13 +193,11 @@ export function DogAddModal({ callback }) {
                                 }
                                 <input
                                     type="file"
+                                    accept="image/*"
                                     className="form-control profile-pic-uploader"
                                     onChange={uploadFile}
                                 />
                             </label>
-                        </>
-                        :
-                        <>
                         </>
                     }
                     <div

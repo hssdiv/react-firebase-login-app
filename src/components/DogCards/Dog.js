@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import '../../styles/Dog.css'
 import { DogDeleteModal, DogEditModal } from './'
 import Spinner from '../Spinner'
-import { firestore } from '../../config/firebase'
+import { firestore, storage } from '../../config/firebase'
 
 export function Dog({ dogData, handleChecked }) {
     const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
@@ -40,6 +40,10 @@ export function Dog({ dogData, handleChecked }) {
                     }).catch(function (error) {
                         console.error('Error removing dog: ', error);
                     });
+
+
+                    const imageRef = storage.refFromURL(dogData.imageUrl)
+                    imageRef.delete();
                 }
                 deleteDogFromFb();
 
