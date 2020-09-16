@@ -5,6 +5,7 @@ import auth, { firestore, storage } from '../../config/firebase'
 import Spinner from '../Spinner'
 import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext } from '../../context/DogsContext'
+import { FirebaseStorageContext } from '../../context/FirebaseStorageContext'
 import './../../styles/Dogs.css'
 import { DogAddModal } from '../DogCards/DogAddModal'
 
@@ -25,6 +26,7 @@ export function Dogs() {
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null)
 
     const { dogResult, dogMethods } = useContext(DogsContext)
+    const { storageStatus, storageMethods } = useContext(FirebaseStorageContext)
 
     useEffect(() => {
         console.log('useEffect fetching Dogs from fs...')
@@ -37,6 +39,29 @@ export function Dogs() {
         return dogListenerUnsubscribe
 
     }, [])
+
+    useEffect(() => {
+        if (storageStatus) {
+            switch (storageStatus.status) {
+                case 'UPLOADED':
+                    break
+                    //TODO
+                case 'DELETED':
+                    //TODO
+                    break
+                case 'PROGRESS':
+                    progressRef.current.value = storageStatus.percentage;
+                    //TODO
+                    break
+                case 'ERROR':
+                    //TODO show storageStatus.errorMessage
+                    break
+                default:
+                    break
+                    //TODO
+            }
+        }
+    }, [storageStatus])
 
     useEffect(() => {
         if (dogResult) {
@@ -204,7 +229,19 @@ export function Dogs() {
                         setSimpleErrorMsg('Coudn\'t get dogs from server');
                     }
                 } else {
-                    const storageRef = storage.ref();
+
+
+                    storageMethods.uploadPicture(result)
+
+
+
+
+                    //TODO this !progressRef.current.value = percentage;! should be listening to updates
+
+
+
+                    
+                    /* const storageRef = storage.ref();
                     console.log(auth.currentUser.uid)
                     const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
                     var task = fileRef.put(result.dogPicture);
@@ -228,9 +265,10 @@ export function Dogs() {
                             const db = firestore();
                             const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
                             db.collection('dogs').add(addCustomdDog);
-                        });
-                }
+                        }); */
 
+                        
+                 }
                 break;
             default:
                 return;

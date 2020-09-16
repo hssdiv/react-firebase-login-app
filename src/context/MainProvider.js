@@ -1,16 +1,18 @@
 import React from 'react'
-import { AuthProvider, DrawerProvider, PlanetsProvider, DogsProvider } from './'
+import { AuthProvider, DrawerProvider, PlanetsProvider, DogsProvider, FirebaseStorageProvider } from './'
 
 function MainProvider({ children }) {
     return (
         <div>
             <AuthProvider>
                 <DrawerProvider>
-                    <PlanetsProvider>
-                        <DogsProvider>
-                            {children}
-                        </DogsProvider>
-                    </PlanetsProvider>
+                    <FirebaseStorageProvider>
+                        <PlanetsProvider>
+                            <DogsProvider>
+                                {children}
+                            </DogsProvider>
+                        </PlanetsProvider>
+                    </FirebaseStorageProvider>
                 </DrawerProvider>
             </AuthProvider>
         </div>

@@ -41,7 +41,7 @@ export function Dog({ dogData, handleChecked }) {
                         console.error('Error removing dog: ', error);
                     });
 
-
+                    //change 
                     const imageRef = storage.refFromURL(dogData.imageUrl)
                     imageRef.delete();
                 }

@@ -1,72 +1,89 @@
-import React, { useReducer, useEffect } from 'react'
-import auth from '../config/firebase'
+import React, { useReducer } from 'react'
+import auth, { storage, firestore } from '../config/firebase'
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'USER_LOGGED_IN':
-            console.log('reducer: user ' + action.email + ' logged in')
-            return state = { email: action.email }
-        case 'USER_REGISTERED':
-            console.log('reducer: user ' + action.email + ' registered')
-            return state = { email: action.email }
-        case 'USER_LOGGED_OUT':
-            console.log('reducer: user logged out')
-            return null
+        case 'DOG_PICTURE_UPLOADED':
+            console.log('reducer: DOG_PICTURE_UPLOADED')
+            return state = { status: 'UPLOADED' }
+        case 'DOG_PICTURE_DELETED':
+            console.log('reducer: DOG_PICTURE_DELETED')
+            return state = { status: 'DELETED' }
+        case 'FIREBASE_STORAGE_ERROR':
+            console.log('reducer: firebase storage error')
+            return state = { status: 'ERROR', errorMessage: action.errorMessage }
+        case 'UPDATE_PROGRESS_BAR':
+            return state = { status: 'PROGRESS', percentage: action.percentage}
         default:
             return state
     }
 }
 
-export const AuthContext = React.createContext();
+export const FirebaseStorageContext = React.createContext();
 
-export function AuthProvider({ children }) {
+export function FirebaseStorageProvider({ children }) {
     const initialState = null;
-    const [currentUser, dispatch] = useReducer(reducer, initialState)
+    const [storageStatus, dispatch] = useReducer(reducer, initialState)
 
-    useEffect(() => {
-        const unregisterAuthObserver = auth.onAuthStateChanged(user => {
-            console.log('auth state change detected');
-            if (user) {
-                dispatch({ type: 'USER_LOGGED_IN', email: user.email })
-            }
-        })
-        return () => unregisterAuthObserver()
-    }, [])
-
-    const session = {
-        userSignIn: async (login, password) => {
+    const storageMethods = {
+        uploadPicture: async (result) => {
             try {
-                const res = await auth.signInWithEmailAndPassword(login, password);
-                console.log('user.email: ' + res.user.email)
-                dispatch({ type: 'USER_LOGGED_IN', email: res.user.email })
+                const storageRef = storage.ref();
+                const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
+                var task = fileRef.put(result.dogPicture);
+
+                task.on('state_changed',
+                    function progress(snapshot) {
+                        let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('uploaded ' + percentage + '%');
+                        dispatch({ type: 'UPDATE_PROGRESS_BAR', percentage: percentage })
+                        //progressRef.current.value = percentage;
+                    },
+
+                    function error(err) {
+                        console.error('upload progress error:' + err)
+
+                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err})
+                    },
+
+                    async function complete() {
+                        console.log('upload complete');
+
+                        const fileUrl = await fileRef.getDownloadURL()
+
+                        const db = firestore();
+                        const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
+                        db.collection('dogs').add(addCustomdDog);
+
+
+                        dispatch({type: 'DOG_PICTURE_UPLOADED'})
+                    });
+
                 return { result: true }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
             }
         },
-        userRegistered: async (login, password) => {
+        deleteByUrl: (url) => {
             try {
-                const res = await auth.createUserWithEmailAndPassword(login, password);
-                dispatch({ type: 'USER_REGISTERED', email: res.user.email })
+                const imageRef = storage.refFromURL(url)
+                imageRef.delete();
+                dispatch({ type: 'DOG_PICTURE_DELETED'})
                 return { result: true }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
             }
-        },
-        userLogOut: async () => {
-            await auth.signOut()
-            dispatch({ type: 'USER_LOGGED_OUT' })
         }
     }
 
     return (
-        <AuthContext.Provider
+        <FirebaseStorageContext.Provider
             value={{
-                currentUser,
-                session
+                storageStatus,
+                storageMethods
             }}
         >
             {children}
-        </AuthContext.Provider>
+        </FirebaseStorageContext.Provider>
     );
 }
