@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { PlanetsContext } from '../../context/PlanetsContext'
+import { PlanetsContext } from '../../context/'
 import PlanetsTableLandscape from '../PlanetsTable/PlanetsTableLandscape'
 import PlanetsTablePortrait from '../PlanetsTable/PlanetsTablePortrait'
 import GetWidth from '../../ui/useWindowSize'

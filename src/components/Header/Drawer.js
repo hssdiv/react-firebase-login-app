@@ -10,7 +10,7 @@ function Drawer(props) {
     }
 
     return (
-        <div id='drawer' className='sidenav' style={props.style}>
+        <div id='drawer' className='drawer' style={props.style}>
             <span
                 className='closebtn'
                 onClick={() => handleCloseDrawer()}>

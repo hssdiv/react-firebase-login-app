@@ -14,9 +14,3 @@
 .deleteDogsButton:hover {
   opacity: 0.8;
 }
-
-.progressbar {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 50%;
-}

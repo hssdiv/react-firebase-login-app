@@ -8,7 +8,7 @@ function NavigationLink({ path, onClick, name, from }) {
     
     return (
         <Link
-            className={'nav-links'}
+            className={'header-links'}
             to={newTo}
             onClick={onClick}>
             <li>

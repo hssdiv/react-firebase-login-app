@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import '../../styles/Dog.css'
 import { DogDeleteModal, DogEditModal } from './'
 import Spinner from '../Spinner'
-import { firestore, storage } from '../../config/firebase'
+import { firestore } from '../../config/firebase'
+import { FirestoreContext } from '../../context/'
 
 export function Dog({ dogData, handleChecked }) {
     const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
     const [editModalIsVisible, setEditModalIsVisible] = useState(false);
     const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.checked);
+
+    const { firestoreMethods } = useContext(FirestoreContext)
 
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
 
@@ -33,20 +36,7 @@ export function Dog({ dogData, handleChecked }) {
                 setSpinnerIsVisible(true);
                 setDeletionModalIsVisible(false);
 
-                const deleteDogFromFb = () => {
-                    const db = firestore();
-                    db.collection('dogs').doc(dogData.id).delete().then(function () {
-                        console.log('Dog successfully deleted!');
-                    }).catch(function (error) {
-                        console.error('Error removing dog: ', error);
-                    });
-
-                    //change 
-                    const imageRef = storage.refFromURL(dogData.imageUrl)
-                    imageRef.delete();
-                }
-                deleteDogFromFb();
-
+                firestoreMethods.deleteDogFromFirestore(dogData)
                 break;
             default:
                 return;

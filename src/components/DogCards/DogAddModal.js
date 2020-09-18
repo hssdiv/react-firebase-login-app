@@ -83,31 +83,17 @@ export function DogAddModal({ callback }) {
 
 
     const uploadFile = async ({ target: { files } }) => {
-        setDogPicture(files[0]);
+        console.log('dogAddModal files[0]:'+files[0])
 
-        const fr = new FileReader();
-        fr.onload = function () {
-            imagePreviewRef.current.src = fr.result;
-        }
-        fr.readAsDataURL(files[0]);
+        if (files[0]) {
+            setDogPicture(files[0]);
 
-
-        //imageTest.current.src = files[0]
-        //let data = new FormData();
-        //data.append( 'file', files[0] )
-
-        /* const options = {
-          onUploadProgress: (progressEvent) => {
-            const {loaded, total} = progressEvent;
-            let percent = Math.floor( (loaded * 100) / total )
-            console.log( `${loaded}kb of ${total}kb | ${percent}%` );
-    
-            if( percent < 100 ){
-              this.setState({ uploadPercentage: percent })
+            const fr = new FileReader();
+            fr.onload = function () {
+                imagePreviewRef.current.src = fr.result;
             }
-          } */
-
-
+            fr.readAsDataURL(files[0]);
+        }
     }
 
     return (

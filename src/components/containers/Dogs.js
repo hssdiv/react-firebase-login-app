@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Dog, AddDogCard, DogDeleteModal } from '../DogCards'
 import GetWidth from '../../ui/useWindowSize'
-import auth, { firestore, storage } from '../../config/firebase'
+import { firestore } from '../../config/firebase'
 import Spinner from '../Spinner'
 import SimpleErrorMessage from '../SimpleErrorMessage'
-import { DogsContext } from '../../context/DogsContext'
-import { FirebaseStorageContext } from '../../context/FirebaseStorageContext'
+import { DogsContext, FirebaseStorageContext, FirestoreContext } from '../../context/'
 import './../../styles/Dogs.css'
 import { DogAddModal } from '../DogCards/DogAddModal'
 
@@ -27,8 +26,10 @@ export function Dogs() {
 
     const { dogResult, dogMethods } = useContext(DogsContext)
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext)
+    const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext)
 
     useEffect(() => {
+        //????? setDogs(firestoreMethods.subscribeToDogsListener())
         console.log('useEffect fetching Dogs from fs...')
         const db = firestore();
         const dogListenerUnsubscribe = db.collection('dogs').onSnapshot((snapshot) => {
@@ -43,25 +44,23 @@ export function Dogs() {
     useEffect(() => {
         if (storageStatus) {
             switch (storageStatus.status) {
-                case 'UPLOADED':
-                    break
-                    //TODO
-                case 'DELETED':
-                    //TODO
-                    break
-                case 'PROGRESS':
-                    progressRef.current.value = storageStatus.percentage;
-                    //TODO
-                    break
                 case 'ERROR':
-                    //TODO show storageStatus.errorMessage
+                    setSimpleErrorMsg(storageStatus.errorMessage)
                     break
                 default:
                     break
-                    //TODO
             }
         }
-    }, [storageStatus])
+        if (firestoreStatus) {
+            switch (firestoreStatus.status) {
+                case 'ERROR':
+                    setSimpleErrorMsg(firestoreStatus.errorMessage)
+                    break
+                default:
+                    break
+            }
+        }
+    }, [storageStatus, firestoreStatus])
 
     useEffect(() => {
         if (dogResult) {
@@ -136,56 +135,29 @@ export function Dogs() {
                 break;
             case 'MODAL_DELETE_PRESSED':
                 setDeleteModalIsVisible(false);
-                deleteCollection();
+                firestoreMethods.deleteSelected(dogsChecked)
                 break;
             default:
                 return;
         }
     }
 
-    function deleteCollection() {
-        const db = firestore();
-
-        db.collection('dogs').get().then(function (querySnapshot) {
-            var batch = db.batch();
-
-            querySnapshot.forEach(function (doc) {
-                if (dogsChecked.find(checkedDog => ((doc.id === checkedDog.id))).checked) {
-                    batch.delete(doc.ref);
-
-
-                    //delete from storage
-                    const imageRef = storage.refFromURL(doc.data().imageUrl)
-                    imageRef.delete();
-                }
-            });
-
-            return batch.commit();
-        }).then(function () {
-            console.log('batch delete dog(s) completed')
-        });
-    }
 
     useEffect(() => {
         console.log('Getting random dog...')
         if ((randomDog.message) && (randomDog.message.includes('breeds'))) {
             const breedName = getFullBreedName(randomDog.message)
 
-            const addDogToFs = (dogToAdd) => {
-                const db = firestore();
-                db.collection('dogs').add(dogToAdd);
-            }
-
             if (breedName.includes('-')) {
                 const [masterBreed, subBreed] = breedName.split('-')
                 const dog = { breed: masterBreed, subBreed: subBreed, imageUrl: randomDog.message }
                 console.log('adding dog' + dog.breed + 'to firestore')
 
-                addDogToFs(dog);
+                firestoreMethods.addDogToFirestore(dog)
             } else {
                 const dog = { breed: breedName, imageUrl: randomDog.message }
                 console.log('adding dog ' + dog.breed + ' to firestore')
-                addDogToFs(dog);
+                firestoreMethods.addDogToFirestore(dog)
             }
 
             setSpinnerIsVisible(false)
@@ -193,6 +165,7 @@ export function Dogs() {
             setSimpleErrorMsg(randomDog.error)
             setSpinnerIsVisible(false)
         }
+        // eslint-disable-next-line
     }, [randomDog])
 
     function getFullBreedName(url) {
@@ -232,50 +205,12 @@ export function Dogs() {
 
 
                     storageMethods.uploadPicture(result)
-
-
-
-
-                    //TODO this !progressRef.current.value = percentage;! should be listening to updates
-
-
-
-                    
-                    /* const storageRef = storage.ref();
-                    console.log(auth.currentUser.uid)
-                    const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
-                    var task = fileRef.put(result.dogPicture);
-
-                    task.on('state_changed',
-                        function progress(snapshot) {
-                            let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            console.log('uploaded ' + percentage + '%');
-                            progressRef.current.value = percentage;
-                        },
-
-                        function error(err) {
-                            console.error('upload progress error:' + err)
-                        },
-
-                        async function complete() {
-                            console.log('upload complete');
-
-                            const fileUrl = await fileRef.getDownloadURL()
-
-                            const db = firestore();
-                            const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
-                            db.collection('dogs').add(addCustomdDog);
-                        }); */
-
-                        
-                 }
+                }
                 break;
             default:
                 return;
         }
     }
-
-    const progressRef = React.useRef(null)
 
     return (
         <div>
@@ -295,15 +230,6 @@ export function Dogs() {
                 :
                 <button className='deleteDogsButton' disabled style={{ opacity: '0.7' }}>delete</button>
             }
-            <div>
-                <progress
-                    className="progressbar"
-                    value="0"
-                    max="100"
-                    ref={progressRef}
-                >0%
-            </progress>
-            </div>
             <SimpleErrorMessage
                 error={simpleErrorMsg}
             />

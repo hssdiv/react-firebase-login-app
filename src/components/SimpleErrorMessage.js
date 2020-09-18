@@ -11,7 +11,9 @@ function SimpleErrorMessage(props) {
 
     const handleCloseButton = () => {
         setError(null);
-        props.callback(null);
+        if(props.callback) {
+            props.callback(null);
+        }
     }
     return (
 

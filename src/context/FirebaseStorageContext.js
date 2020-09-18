@@ -4,13 +4,13 @@ import auth, { storage, firestore } from '../config/firebase'
 const reducer = (state, action) => {
     switch (action.type) {
         case 'DOG_PICTURE_UPLOADED':
-            console.log('reducer: DOG_PICTURE_UPLOADED')
+            console.log('storage reducer: DOG_PICTURE_UPLOADED')
             return state = { status: 'UPLOADED' }
         case 'DOG_PICTURE_DELETED':
-            console.log('reducer: DOG_PICTURE_DELETED')
+            console.log('storage reducer: DOG_PICTURE_DELETED')
             return state = { status: 'DELETED' }
         case 'FIREBASE_STORAGE_ERROR':
-            console.log('reducer: firebase storage error')
+            console.log('storage reducer: firebase storage error')
             return state = { status: 'ERROR', errorMessage: action.errorMessage }
         case 'UPDATE_PROGRESS_BAR':
             return state = { status: 'PROGRESS', percentage: action.percentage}
@@ -64,13 +64,15 @@ export function FirebaseStorageProvider({ children }) {
                 return { result: false, errorMessage: error.message }
             }
         },
-        deleteByUrl: (url) => {
+        deleteByUrl: async (url) => {
             try {
                 const imageRef = storage.refFromURL(url)
-                imageRef.delete();
+                await imageRef.delete();
                 dispatch({ type: 'DOG_PICTURE_DELETED'})
                 return { result: true }
             } catch (error) {
+                //dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message})
+                //console.log(error.message)
                 return { result: false, errorMessage: error.message }
             }
         }
