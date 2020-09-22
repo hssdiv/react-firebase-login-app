@@ -17,6 +17,7 @@ export function Dogs() {
     const [randomDog, setRandomDog] = useState({})
 
     const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false)
+    const [deleteAllModalIsVisible, setDeleteAllModalIsVisible] = useState(false)
     const [dogAddModalVisible, setDogAddModalVisible] = useState(false)
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
     const [dogSpinnerIsVisible] = useState(false)
@@ -128,14 +129,22 @@ export function Dogs() {
         setDeleteModalIsVisible(true)
     }
 
-    const modalDeleteAllCallback = (result) => {
+    const handleDeleteAllButton = () => {
+        setDeleteAllModalIsVisible(true)
+    }
+
+    const modalDeleteCallback = (result) => {
         switch (result) {
             case 'MODAL_CLOSED':
                 setDeleteModalIsVisible(false);
                 break;
-            case 'MODAL_DELETE_PRESSED':
+            case 'MODAL_DELETE_CHECKED_PRESSED':
                 setDeleteModalIsVisible(false);
                 firestoreMethods.deleteSelected(dogsChecked)
+                break;
+            case 'MODAL_DELETE_ALL_PRESSED':
+                setDeleteAllModalIsVisible(false);
+                firestoreMethods.deleteAll()
                 break;
             default:
                 return;
@@ -183,8 +192,6 @@ export function Dogs() {
                 setDogAddModalVisible(false);
                 break;
             case 'MODAL_CONFIRM_PRESSED':
-
-
                 if (result.type === 'RANDOM') {
                     setSpinnerIsVisible(true)
 
@@ -202,8 +209,6 @@ export function Dogs() {
                         setSimpleErrorMsg('Coudn\'t get dogs from server');
                     }
                 } else {
-
-
                     storageMethods.uploadPicture(result)
                 }
                 break;
@@ -216,30 +221,43 @@ export function Dogs() {
         <div>
             {deleteModalIsVisible &&
                 <DogDeleteModal
-                    callback={modalDeleteAllCallback}
+                    callback={modalDeleteCallback}
+                    title='Delete dog(s)'
+                    text='Are you sure you want to delete dog(s)?'
+                    type='MODAL_DELETE_CHECKED_PRESSED'
                 />
             }
-            <h1>Dogs page</h1>
-
-
+            {deleteAllModalIsVisible &&
+                <DogDeleteModal
+                    callback={modalDeleteCallback}
+                    title='Delete all dogs'
+                    text='Are you sure you want to delete all dogs?'
+                    type='MODAL_DELETE_ALL_PRESSED'
+                />}
             {dogAddModalVisible &&
                 <DogAddModal callback={addModalCallback} />}
+            <h1>
+                Dogs page
+            </h1>
+            <div>
+                {deleteCheckedEnabled ?
+                    <button className='deleteDogsButton' onClick={handleDeleteButton}>Delete selected</button>
+                    :
+                    <button className='deleteDogsButton' disabled style={{ opacity: '0.5' }}>Delete selected</button>
+                }
+                <button className='deleteAllDogsButton' onClick={handleDeleteAllButton}>Delete all</button>
+            </div>
 
-            {deleteCheckedEnabled ?
-                <button className='deleteDogsButton' onClick={handleDeleteButton}>delete</button>
-                :
-                <button className='deleteDogsButton' disabled style={{ opacity: '0.7' }}>delete</button>
-            }
             <SimpleErrorMessage
                 error={simpleErrorMsg}
             />
             <div
                 className='dogCardContainer'
                 style={
-                    currentScreenWidth > 1066 ?
+                    currentScreenWidth > 1079 ?
                         {}
                         :
-                        currentScreenWidth > 533 ?
+                        currentScreenWidth > 547 ?
                             { maxWidth: '533px', position: 'center' }
                             :
                             { justifyContent: 'center' }

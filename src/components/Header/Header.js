@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { AuthContext, DrawerContext } from '../../context/'
 import NavigationLink from './NavigationLink'
 import '../../styles/Header.css';
@@ -18,18 +18,22 @@ export function Header() {
 
     const { storageStatus } = useContext(FirebaseStorageContext)
 
+    const [pictureUploaded, setPictureUploaded] = useState(false)
+
     useEffect(() => {
         if (storageStatus) {
             switch (storageStatus.status) {
                 case 'PROGRESS':
-                    console.log('setting progress to '+ storageStatus.percentage)
+                    if (storageStatus.percentage === 0) {
+                        setPictureUploaded(false)
+                    }
+                    console.log('setting progress to ' + storageStatus.percentage)
                     progressRef.current.value = storageStatus.percentage;
-                    
                     break;
                 case 'UPLOADED':
+                    setPictureUploaded(true);
                     console.log('setting progress back to 0');
-                    progressRef.current.value = 0;
-                    
+                    //progressRef.current.value = 0;
                     break;
                 default:
                     break
@@ -87,17 +91,32 @@ export function Header() {
 
                 </nav>
             }
-            <div
-                className='progressbar-container'>
-                <progress
-                    className="progressbar"
-                    value="0"
-                    max="100"
-                    ref={progressRef}
-                >
-                    0%
-            </progress>
-            </div>
+            {pictureUploaded ?
+                <div
+                    className='progressbar-container'>
+                    <progress
+                        className="progressbar2"
+                        value="0"
+                        max="100"
+                        ref={progressRef}
+                    >
+                        0%
+                    </progress>
+                </div>
+                :
+                <div
+                    className='progressbar-container'>
+                    <progress
+                        className="progressbar"
+                        value="0"
+                        max="100"
+                        ref={progressRef}
+                    >
+                        0%
+                     </progress>
+                </div>
+            }
+
         </>
     )
 }

@@ -35,5 +35,11 @@
 }
 
 .progressbar::-webkit-progress-value{
-  background-color: red;
+  transition: width 0.5s; 
+  background-color: green;
+}
+
+.progressbar2::-webkit-progress-value{
+  transition: width 0.5s; 
+  background-color: rgb(73, 79, 82);
 }

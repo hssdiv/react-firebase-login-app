@@ -1,5 +1,6 @@
 import React, { useReducer } from 'react'
 import auth, { storage, firestore } from '../config/firebase'
+import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -13,7 +14,7 @@ const reducer = (state, action) => {
             console.log('storage reducer: firebase storage error')
             return state = { status: 'ERROR', errorMessage: action.errorMessage }
         case 'UPDATE_PROGRESS_BAR':
-            return state = { status: 'PROGRESS', percentage: action.percentage}
+            return state = { status: 'PROGRESS', percentage: action.percentage }
         default:
             return state
     }
@@ -29,7 +30,10 @@ export function FirebaseStorageProvider({ children }) {
         uploadPicture: async (result) => {
             try {
                 const storageRef = storage.ref();
-                const fileRef = storageRef.child(auth.currentUser.uid).child(result.dogPicture.name);
+
+                const uniqueGeneratedName = UniqueIdGenerator();
+
+                const fileRef = storageRef.child(auth.currentUser.uid).child(uniqueGeneratedName);
                 var task = fileRef.put(result.dogPicture);
 
                 task.on('state_changed',
@@ -43,7 +47,7 @@ export function FirebaseStorageProvider({ children }) {
                     function error(err) {
                         console.error('upload progress error:' + err)
 
-                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err})
+                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err })
                     },
 
                     async function complete() {
@@ -51,12 +55,15 @@ export function FirebaseStorageProvider({ children }) {
 
                         const fileUrl = await fileRef.getDownloadURL()
 
-                        const db = firestore();
-                        const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
-                        db.collection('dogs').add(addCustomdDog);
+                        uploadCustomDogToFirestore(result, fileUrl);
+                        
+                        dispatch({ type: 'DOG_PICTURE_UPLOADED' })
 
-
-                        dispatch({type: 'DOG_PICTURE_UPLOADED'})
+                        function uploadCustomDogToFirestore(result, fileUrl) {
+                            const db = firestore();
+                            const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
+                            db.collection('dogs').add(addCustomdDog);
+                        }
                     });
 
                 return { result: true }
@@ -68,7 +75,7 @@ export function FirebaseStorageProvider({ children }) {
             try {
                 const imageRef = storage.refFromURL(url)
                 await imageRef.delete();
-                dispatch({ type: 'DOG_PICTURE_DELETED'})
+                dispatch({ type: 'DOG_PICTURE_DELETED' })
                 return { result: true }
             } catch (error) {
                 //dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message})

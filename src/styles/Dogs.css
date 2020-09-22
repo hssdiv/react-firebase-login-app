@@ -1,14 +1,33 @@
+.dogCardContainer {
+  max-width: 1066px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  margin-top: 70px;
+}
+
 
 .deleteDogsButton {  
   background-color: red;
   color: white;
   padding: 14px 20px;
-  margin: 8px 0;
   border: none;
   cursor: pointer;
-  width: 8%;
-  
-  float:'center'
+  width: 50;
+  position: absolute;
+  right: 180px;
+}
+
+
+.deleteAllDogsButton {  
+  background-color: red;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  width: 50;
+  position: absolute;
+  right: 80px;
 }
 
 .deleteDogsButton:hover {

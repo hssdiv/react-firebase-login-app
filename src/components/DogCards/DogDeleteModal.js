@@ -3,7 +3,7 @@ import '../../styles/ModalDeleteConfirm.css'
 import useEscape from '../../ui/useEscape'
 import useEnter from '../../ui/useEnter'
 
-export function DogDeleteModal({callback}) {
+export function DogDeleteModal({ callback, title, text, type }) {
 
     const handleCancelButton = () => {
         callback('MODAL_CLOSED');
@@ -12,7 +12,7 @@ export function DogDeleteModal({callback}) {
     useEscape(handleCancelButton);
 
     const handleDeleteButton = () => {
-        callback('MODAL_DELETE_PRESSED');
+        callback(type);
     }
 
     useEnter(handleDeleteButton);
@@ -37,8 +37,8 @@ export function DogDeleteModal({callback}) {
                 <div
                     className='modalContainer'
                 >
-                    <h1>Delete Dog</h1>
-                    <p>Are you sure you want to delete dog(s)?</p>
+                    <h1>{title}</h1>
+                    <p>{text}</p>
 
                     <div className='modalClearfix' >
                         <button

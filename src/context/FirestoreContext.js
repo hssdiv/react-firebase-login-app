@@ -74,6 +74,22 @@ export function FirestoreProvider({ children }) {
             }).then(function () {
                 console.log('batch delete dog(s) completed')
             });
+        },
+        deleteAll: () => {
+            const db = firestore();
+
+            db.collection('dogs').get().then(function (querySnapshot) {
+                var batch = db.batch();
+
+                querySnapshot.forEach(function (doc) {
+                        batch.delete(doc.ref);
+                        storageMethods.deleteByUrl(doc.data().imageUrl)
+                });
+                dispatch({ type: 'FIRESTORE_BATCH_DELETE' })
+                return batch.commit();
+            }).then(function () {
+                console.log('batch delete dog(s) completed')
+            });
         }
     }
 

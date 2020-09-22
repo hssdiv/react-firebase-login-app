@@ -63,6 +63,9 @@ export function Dog({ dogData, handleChecked }) {
         <>
             {deletionModalIsVisible &&
                 <DogDeleteModal
+                    title='Deleting dog'
+                    text='Do you really want to delete dog?'
+                    type='MODAL_DELETE_PRESSED'
                     callback={modalDeleteCallback}
                 />
             }
