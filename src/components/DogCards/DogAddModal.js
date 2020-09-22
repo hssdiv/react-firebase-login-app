@@ -47,20 +47,6 @@ export function DogAddModal({ callback }) {
             }
     }
 
-
-    /*if ((breed === null) || (breed === '')) {
-            setError('You must type in breed');
-        } else if (dogPicture === null) {
-            setError('You must uplaod dog picture');
-        }
-        else {
-            setError(null);
-            if (event) {
-                event.preventDefault();
-            }
-            callback({ action: 'MODAL_CONFIRM_PRESSED', type: addType, breed: breed, subBreed: subBreed, dogPicture: dogPicture });
-        }*/
-
     useEnter(handleConfirmButton);
 
     const handleCloseModal = () => {
@@ -79,8 +65,6 @@ export function DogAddModal({ callback }) {
         }
         setAddType(event.target.value)
     }
-
-
 
     const uploadFile = async ({ target: { files } }) => {
         console.log('dogAddModal files[0]:'+files[0])
@@ -108,19 +92,12 @@ export function DogAddModal({ callback }) {
                 ×
             </span>
 
-
-
-
-
             <form
                 onSubmit={handleConfirmButton}
                 className='modalContent'>
                 <div className='modalContainer'>
                     <h1>Add Dog</h1>
                     <p>Add dog data</p>
-
-
-
 
                     <div className="radio">
                         <label>
@@ -138,8 +115,6 @@ export function DogAddModal({ callback }) {
                             Custom dog
                         </label>
                     </div>
-
-
 
                     <SimpleErrorMessage
                         callback={errorCallback}
@@ -206,9 +181,6 @@ export function DogAddModal({ callback }) {
                     </div>
                 </div>
             </form>
-
-
-
         </div>
     )
 }

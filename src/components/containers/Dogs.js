@@ -30,7 +30,6 @@ export function Dogs() {
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext)
 
     useEffect(() => {
-        //????? setDogs(firestoreMethods.subscribeToDogsListener())
         console.log('useEffect fetching Dogs from fs...')
         const db = firestore();
         const dogListenerUnsubscribe = db.collection('dogs').onSnapshot((snapshot) => {
