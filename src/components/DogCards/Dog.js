@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react'
 import '../../styles/Dog.css'
 import { DogDeleteModal, DogEditModal } from './'
 import Spinner from '../Spinner'
-import { firestore } from '../../config/firebase'
 import { FirestoreContext } from '../../context/'
 
 export function Dog({ dogData, handleChecked }) {
@@ -50,9 +49,10 @@ export function Dog({ dogData, handleChecked }) {
                 break;
             case 'MODAL_CONFIRM_PRESSED':
                 setEditModalIsVisible(false);
-                const db = firestore();
-                const updatedDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: dogData.imageUrl }
-                db.collection('dogs').doc(dogData.id).set(updatedDog);
+                
+                const updatedDog = { breed: result.breed, subBreed: result.subBreed }
+                firestoreMethods.updateDog(updatedDog, dogData.id)
+                
                 break;
             default:
                 return;

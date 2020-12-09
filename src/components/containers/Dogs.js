@@ -31,15 +31,49 @@ export function Dogs() {
 
     useEffect(() => {
         console.log('useEffect fetching Dogs from fs...')
-        const db = firestore();
-        const dogListenerUnsubscribe = db.collection('dogs').onSnapshot((snapshot) => {
-            const dogsData = [];
-            snapshot.forEach(doc => dogsData.push(({ id: doc.id, ...doc.data() })))
-            setDogs(dogsData);
-        })
-        return dogListenerUnsubscribe
+        if (process.env.REACT_APP_SERVER === "GOOGLE") {
+            const db = firestore();
+            const dogListenerUnsubscribe = db.collection('dogs').onSnapshot((snapshot) => {
+                const dogsData = [];
+                snapshot.forEach(doc => dogsData.push(({ id: doc.id, ...doc.data() })))
+                setDogs(dogsData);
+            })
+            return dogListenerUnsubscribe
+        } else {
 
+            getDogsFromLocalServer()
+        }
     }, [])
+
+    const getDogsFromLocalServer = async () => {
+        const requestOptions = {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+        };
+
+        const response = await fetch('http://localhost:4000/getdogs', requestOptions)
+        //console.log(response)
+
+        if (response?.ok) {
+            const result = await response.json();
+            const dogsData = [];
+            result.forEach(dog => dogsData.push(({
+                id: dog.dog_id,
+                breed: dog.breed,
+                subBreed: dog.subbreed,
+                imageUrl: dog.imageurl,
+                custom: dog.custom,
+                timestamp: dog.timestamp,
+            })))
+            setDogs(dogsData);
+        } else {
+            setSimpleErrorMsg(response?.statusText)
+            //TODO if response.status === 401 -> redirec
+            console.log(response?.statusText)
+        }
+    }
+
 
     useEffect(() => {
         if (storageStatus) {
@@ -56,6 +90,9 @@ export function Dogs() {
                 case 'ERROR':
                     setSimpleErrorMsg(firestoreStatus.errorMessage)
                     break
+                case 'UPDATE_DOGS_FROM_LOCAL_SERVER':
+                    getDogsFromLocalServer();
+                    break;
                 default:
                     break
             }

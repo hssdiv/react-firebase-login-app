@@ -67,7 +67,8 @@ export function DogAddModal({ callback }) {
     }
 
     const uploadFile = async ({ target: { files } }) => {
-        console.log('dogAddModal files[0]:'+files[0])
+        console.log('dogAddModal files[0]:')
+        console.log(files[0])
 
         if (files[0]) {
             setDogPicture(files[0]);
