@@ -8,7 +8,7 @@ const reducer = (state, action) => {
             return state = { email: action.email }
         case 'USER_REGISTERED':
             console.log('reducer: user ' + action.email + ' registered')
-            return state = { email: action.email }
+            return null
         case 'USER_LOGGED_OUT':
             console.log('reducer: user logged out')
             return null

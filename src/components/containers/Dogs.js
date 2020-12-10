@@ -40,12 +40,12 @@ export function Dogs() {
             })
             return dogListenerUnsubscribe
         } else {
-
             getDogsFromLocalServer()
         }
     }, [])
 
     const getDogsFromLocalServer = async () => {
+        console.log('getting dogs from server')
         const requestOptions = {
             method: 'GET',
             credentials: 'include',
@@ -64,12 +64,12 @@ export function Dogs() {
                 subBreed: dog.subbreed,
                 imageUrl: dog.imageurl,
                 custom: dog.custom,
+                picture: dog.picture,
                 timestamp: dog.timestamp,
             })))
             setDogs(dogsData);
         } else {
             setSimpleErrorMsg(response?.statusText)
-            //TODO if response.status === 401 -> redirec
             console.log(response?.statusText)
         }
     }
@@ -81,6 +81,9 @@ export function Dogs() {
                 case 'ERROR':
                     setSimpleErrorMsg(storageStatus.errorMessage)
                     break
+                case 'UPLOADED':
+                    getDogsFromLocalServer();
+                    break;
                 default:
                     break
             }
@@ -246,6 +249,10 @@ export function Dogs() {
                     }
                 } else {
                     storageMethods.uploadPicture(result)
+                    //const successfullyUploaded = await storageMethods.uploadPicture(result)
+                    //if (successfullyUploaded) {
+                    //    getDogsFromLocalServer();
+                    //}
                 }
                 break;
             default:

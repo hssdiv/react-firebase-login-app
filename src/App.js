@@ -6,7 +6,6 @@ import GetWidth from './ui/useWindowSize'
 import MainApp from './components/MainApp'
 import { AuthContext } from './context/AuthContext';
 
-//TODO simplify that scary thing
 function App() {
     const currentScreenWidth = GetWidth()
 

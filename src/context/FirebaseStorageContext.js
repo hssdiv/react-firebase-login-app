@@ -29,44 +29,91 @@ export function FirebaseStorageProvider({ children }) {
     const storageMethods = {
         uploadPicture: async (result) => {
             try {
-                const storageRef = storage.ref();
+                if (process.env.REACT_APP_SERVER === 'GOOGLE') {
+                    const storageRef = storage.ref();
 
-                const uniqueGeneratedName = UniqueIdGenerator();
+                    const uniqueGeneratedName = UniqueIdGenerator();
 
-                const fileRef = storageRef.child(auth.currentUser.uid).child(uniqueGeneratedName);
-                var task = fileRef.put(result.dogPicture);
+                    const fileRef = storageRef.child(auth.currentUser.uid).child(uniqueGeneratedName);
+                    var task = fileRef.put(result.dogPicture);
 
-                task.on('state_changed',
-                    function progress(snapshot) {
-                        let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('uploaded ' + percentage + '%');
-                        dispatch({ type: 'UPDATE_PROGRESS_BAR', percentage: percentage })
-                        //progressRef.current.value = percentage;
-                    },
+                    task.on('state_changed',
+                        function progress(snapshot) {
+                            let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            console.log('uploaded ' + percentage + '%');
+                            dispatch({ type: 'UPDATE_PROGRESS_BAR', percentage: percentage })
+                            //progressRef.current.value = percentage;
+                        },
 
-                    function error(err) {
-                        console.error('upload progress error:' + err)
+                        function error(err) {
+                            console.error('upload progress error:' + err)
 
-                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err })
-                    },
+                            dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err })
+                        },
 
-                    async function complete() {
-                        console.log('upload complete');
+                        async function complete() {
+                            console.log('upload complete');
 
-                        const fileUrl = await fileRef.getDownloadURL()
+                            const fileUrl = await fileRef.getDownloadURL()
 
-                        uploadCustomDogToFirestore(result, fileUrl);
-                        
-                        dispatch({ type: 'DOG_PICTURE_UPLOADED' })
+                            uploadCustomDogToFirestore(result, fileUrl);
 
-                        function uploadCustomDogToFirestore(result, fileUrl) {
-                            const db = firestore();
-                            const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl }
-                            db.collection('dogs').add(addCustomdDog);
+                            dispatch({ type: 'DOG_PICTURE_UPLOADED' })
+
+                            async function uploadCustomDogToFirestore(result, fileUrl) {
+                                const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl, custom: true }
+
+                                const db = firestore();
+                                db.collection('dogs').add(addCustomdDog);
+                            }
+                        });
+
+                    return true
+                } else {
+                    const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: "", custom: true }
+
+                    function getBase64(file) {
+                        var reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = function () {
+                            console.log();
+                            sendCustomDogToServer(reader.result)
+                        };
+                        reader.onerror = function (error) {
+                            console.log('Error: ', error);
+                        };
+                    }
+                    getBase64(result.dogPicture)
+
+                    async function sendCustomDogToServer(picture) {
+                        const customDog = {...addCustomdDog, picture: picture}
+                        // console.log('test')
+                        // console.log(customDog)
+
+
+                        //console.log('picture:')
+                        //console.log(picture) //data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/2w
+                        const requestOptions = {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(customDog)
+                        };
+
+                        const response = await fetch('http://localhost:4000/savedog', requestOptions)
+                        if (response) {
+                            const result = await response.json();
+                            console.log('response from server:')
+                            console.log(result)
+                        } else {
+                            throw new Error('response from server is null');
                         }
-                    });
+                        dispatch({ type: 'DOG_PICTURE_UPLOADED' })
+                        return true
+                    }
 
-                return { result: true }
+
+                }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
             }

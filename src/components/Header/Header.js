@@ -31,9 +31,11 @@ export function Header() {
                     progressRef.current.value = storageStatus.percentage;
                     break;
                 case 'UPLOADED':
-                    setPictureUploaded(true);
-                    console.log('setting progress back to 0');
-                    //progressRef.current.value = 0;
+                    if (process.env.REACT_APP_SERVER === 'GOOGLE') {
+                        setPictureUploaded(true);
+                        console.log('setting progress back to 0');
+                        //progressRef.current.value = 0;
+                    }
                     break;
                 default:
                     break

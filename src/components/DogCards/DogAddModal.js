@@ -24,19 +24,11 @@ export function DogAddModal({ callback }) {
     useEscape(handleCancelButton);
 
     const handleConfirmButton = (event) => {
-            if (formEnabled) {
-                if ((breed === null) || (breed === '')) {
-                    setError('You must type in breed');
-                } else if (dogPicture === null) {
-                    setError('You must uplaod dog picture');
-                }
-                else {
-                    setError(null);
-                if (event) {
-                    event.preventDefault();
-                }
-                callback({ action: 'MODAL_CONFIRM_PRESSED', type: addType, breed: breed, subBreed: subBreed, dogPicture: dogPicture });
-                }
+        if (formEnabled) {
+            if ((breed === null) || (breed === '')) {
+                setError('You must type in breed');
+            } else if (dogPicture === null) {
+                setError('You must uplaod dog picture');
             }
             else {
                 setError(null);
@@ -45,6 +37,13 @@ export function DogAddModal({ callback }) {
                 }
                 callback({ action: 'MODAL_CONFIRM_PRESSED', type: addType, breed: breed, subBreed: subBreed, dogPicture: dogPicture });
             }
+        } else {
+            setError(null);
+            if (event) {
+                event.preventDefault();
+            }
+            callback({ action: 'MODAL_CONFIRM_PRESSED', type: addType, breed: breed, subBreed: subBreed, dogPicture: dogPicture });
+        }
     }
 
     useEnter(handleConfirmButton);
@@ -150,7 +149,11 @@ export function DogAddModal({ callback }) {
                                     <img
                                         alt='selected'
                                         ref={imagePreviewRef}
-                                        style={{ width: '40px', height: '40px', paddingRight: '15px' }}
+                                        style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            paddingRight: '15px'
+                                        }}
                                     />
                                 }
                                 <input

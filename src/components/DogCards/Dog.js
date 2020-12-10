@@ -49,10 +49,10 @@ export function Dog({ dogData, handleChecked }) {
                 break;
             case 'MODAL_CONFIRM_PRESSED':
                 setEditModalIsVisible(false);
-                
+
                 const updatedDog = { breed: result.breed, subBreed: result.subBreed }
                 firestoreMethods.updateDog(updatedDog, dogData.id)
-                
+
                 break;
             default:
                 return;
@@ -81,26 +81,31 @@ export function Dog({ dogData, handleChecked }) {
                     { position: 'relative' }
                 }
             >
-                <div
-                    className='dogImage'
-                    style={
-                        { backgroundImage: 'url(' + dogData.imageUrl + ')' }
-                    }
-                />
+                {dogData.custom ?
+                    //<img className='dogImage'src={`data:image/jpeg;base64,${dogData.picture}`} />
+                    <img className='dogImage' alt='dog' src={`data:image/jpeg;base64,${dogData.picture}`} />
+                    :
+                    <div
+                        className='dogImage'
+                        style={
+                            { backgroundImage: 'url(' + dogData.imageUrl + ')' }
+                        }
+                    />
+                }
                 {deleteCheckBoxChecked ?
-                <span
-                    className='dogDeleteCheckBox'
-                    style={{color: 'green', opacity: '1'}}
-                    onClick={handleDeleteCheckBox}
-                >
-                    &#9745;
+                    <span
+                        className='dogDeleteCheckBox'
+                        style={{ color: 'green', opacity: '1' }}
+                        onClick={handleDeleteCheckBox}
+                    >
+                        &#9745;
                 </span>
-                :
-                <span
-                    className='dogDeleteCheckBox'
-                    onClick={handleDeleteCheckBox}
-                >
-                    &#9744;
+                    :
+                    <span
+                        className='dogDeleteCheckBox'
+                        onClick={handleDeleteCheckBox}
+                    >
+                        &#9744;
                 </span>
                 }
                 <span
