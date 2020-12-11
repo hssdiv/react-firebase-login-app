@@ -1,6 +1,7 @@
 import React, { useReducer, useContext } from 'react'
 import { FirebaseStorageContext } from './FirebaseStorageContext'
 import { firestore } from '../config/firebase'
+import { generateLocalRequestOptions } from '../util/LocalRequestOptions'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -17,7 +18,7 @@ const reducer = (state, action) => {
             console.log('firestore reducer: DOG_COLLECTION_UPDATED')
             return state = { status: 'UPDATED' }
         case 'FIRESTORE_ERROR':
-            console.log('firestore reducer: firebase storage error')
+            console.log(`firestore reducer: firebase storage error: ${action.error}`)
             return state = { status: 'ERROR', errorMessage: action.error }
         case 'UPDATE_DOGS_FROM_LOCAL_SERVER':
             console.log('reducer: UPDATE_DOGS_FROM_LOCAL_SERVER')
@@ -51,23 +52,20 @@ export function FirestoreProvider({ children }) {
             } else {
                 console.log('connecting to server...')
                 try {
-                    const requestOptions = {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dogToAdd)
-                    };
+                    const requestOptions = generateLocalRequestOptions('POST', dogToAdd);
+ 
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/savedog`, requestOptions)
 
-                    const response = await fetch('http://localhost:4000/savedog', requestOptions)
-                    if (response) {
-                        const result = await response.json();
+                    console.log(response)
+                    const result = await response.json();
+                    if (response.ok) {
                         console.log('response from server:')
                         console.log(result)
+                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                        return { result: true }
                     } else {
-                        throw new Error('response from server is null');
+                        throw new Error(result);
                     }
-                    dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                    return { result: true }
                 } catch (error) {
                     dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
                     return { result: false, errorMessage: error.message }
@@ -83,14 +81,9 @@ export function FirestoreProvider({ children }) {
                 const updatedDogWithId = { dog_id: id, ...updatedDog }
                 console.log(JSON.stringify(updatedDogWithId))
                 try {
-                    const requestOptions = {
-                        method: 'PATCH',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedDogWithId)
-                    };
+                    const requestOptions = generateLocalRequestOptions('PATCH', updatedDogWithId);
 
-                    const response = await fetch('http://localhost:4000/updatedog', requestOptions)
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/updatedog`, requestOptions)
                     if (response) {
                         const result = await response.json();
                         console.log('response from server:')
@@ -115,13 +108,9 @@ export function FirestoreProvider({ children }) {
                 });
             } else {
                 try {
-                    const requestOptions = {
-                        method: 'DELETE',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                    };
+                    const requestOptions = generateLocalRequestOptions('DELETE');
 
-                    const response = await fetch('http://localhost:4000/deletedog?' + new URLSearchParams({
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedog?` + new URLSearchParams({
                         dog_id: dogData.id
                     }), requestOptions)
 
@@ -169,14 +158,9 @@ export function FirestoreProvider({ children }) {
 
                     // console.log(JSON.stringify({ dogs_ids: dogs_ids }))
 
-                    const requestOptions = {
-                        method: 'DELETE',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ dogs_ids: dogs_ids })
-                    };
+                    const requestOptions = generateLocalRequestOptions('DELETE', { dogs_ids: dogs_ids });
 
-                    const response = await fetch('http://localhost:4000/deleteselecteddogs', requestOptions)
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deleteselecteddogs`, requestOptions)
                     if (response) {
                         const result = await response.json();
                         console.log('response from server:')
@@ -209,13 +193,9 @@ export function FirestoreProvider({ children }) {
                 });
             } else {
                 try {
-                    const requestOptions = {
-                        method: 'DELETE',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                    };
+                    const requestOptions = generateLocalRequestOptions('DELETE');
 
-                    const response = await fetch('http://localhost:4000/deletedogs', requestOptions)
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedogs`, requestOptions)
                     if (response) {
                         const result = await response.json();
                         console.log('response from server:')

@@ -1,6 +1,7 @@
 import React, { useReducer } from 'react'
 import auth, { storage, firestore } from '../config/firebase'
 import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
+import { generateLocalRequestOptions } from '../util/LocalRequestOptions'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -70,7 +71,7 @@ export function FirebaseStorageProvider({ children }) {
 
                     return true
                 } else {
-                    const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: "", custom: true }
+                    const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, custom: true }
 
                     function getBase64(file) {
                         var reader = new FileReader();
@@ -86,19 +87,10 @@ export function FirebaseStorageProvider({ children }) {
                     getBase64(result.dogPicture)
 
                     async function sendCustomDogToServer(picture) {
+                        //data:image/jpeg;base64,/9j/4AAQSkZJRg
                         const customDog = {...addCustomdDog, picture: picture}
-                        // console.log('test')
-                        // console.log(customDog)
 
-
-                        //console.log('picture:')
-                        //console.log(picture) //data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/2w
-                        const requestOptions = {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(customDog)
-                        };
+                        const requestOptions = generateLocalRequestOptions('POST', customDog);
 
                         const response = await fetch('http://localhost:4000/savedog', requestOptions)
                         if (response) {

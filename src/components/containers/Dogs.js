@@ -7,6 +7,7 @@ import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext, FirebaseStorageContext, FirestoreContext } from '../../context/'
 import './../../styles/Dogs.css'
 import { DogAddModal } from '../DogCards/DogAddModal'
+import { generateLocalRequestOptions } from '../../util/LocalRequestOptions'
 
 export function Dogs() {
     const currentScreenWidth = GetWidth()
@@ -46,16 +47,11 @@ export function Dogs() {
 
     const getDogsFromLocalServer = async () => {
         console.log('getting dogs from server')
-        const requestOptions = {
-            method: 'GET',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-        };
+        const requestOptions = generateLocalRequestOptions('GET');
 
         const response = await fetch('http://localhost:4000/getdogs', requestOptions)
-        //console.log(response)
 
-        if (response?.ok) {
+        if (response.ok) {
             const result = await response.json();
             const dogsData = [];
             result.forEach(dog => dogsData.push(({
