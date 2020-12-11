@@ -50,7 +50,6 @@ export function FirestoreProvider({ children }) {
                     return { result: false, errorMessage: error.message }
                 }
             } else {
-                console.log('connecting to server...')
                 try {
                     const requestOptions = generateLocalRequestOptions('POST', dogToAdd);
  
@@ -84,14 +83,15 @@ export function FirestoreProvider({ children }) {
                     const requestOptions = generateLocalRequestOptions('PATCH', updatedDogWithId);
 
                     const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/updatedog`, requestOptions)
-                    if (response) {
-                        const result = await response.json();
+                    const result = await response.json();
+
+                    if (response.ok) {
                         console.log('response from server:')
                         console.log(result)
+                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                     } else {
-                        throw new Error("'response from server is null'");
+                        throw new Error(`error: ${result}`);
                     }
-                    dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 } catch (error) {
                     dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
                     console.log(error.message)
@@ -113,14 +113,14 @@ export function FirestoreProvider({ children }) {
                     const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedog?` + new URLSearchParams({
                         dog_id: dogData.id
                     }), requestOptions)
-
-                    if (response) {
-                        const result = await response.json();
+                    const result = await response.json();
+                    
+                    if (response.ok) {
                         console.log('response from server:')
                         console.log(result)
                         dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                     } else {
-                        throw new Error('response from server is null');
+                        throw new Error(`error: ${result}`);
                     }
                 } catch (error) {
                     dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
@@ -161,14 +161,15 @@ export function FirestoreProvider({ children }) {
                     const requestOptions = generateLocalRequestOptions('DELETE', { dogs_ids: dogs_ids });
 
                     const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deleteselecteddogs`, requestOptions)
-                    if (response) {
-                        const result = await response.json();
+                    const result = await response.json();
+
+                    if (response.ok) {    
                         console.log('response from server:')
                         console.log(result)
+                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                     } else {
-                        throw new Error("'response from server is null'");
+                        throw new Error(`error: ${result}`);
                     }
-                    dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 } catch (error) {
                     dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
                     console.log(error.message)
@@ -196,14 +197,15 @@ export function FirestoreProvider({ children }) {
                     const requestOptions = generateLocalRequestOptions('DELETE');
 
                     const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedogs`, requestOptions)
-                    if (response) {
-                        const result = await response.json();
+                    const result = await response.json();
+
+                    if (response.ok) {
                         console.log('response from server:')
                         console.log(result)
+                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                     } else {
-                        throw new Error("'response from server is null'");
+                        throw new Error(`error: ${result}`);
                     }
-                    dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 } catch (error) {
                     dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
                     console.log(error.message)

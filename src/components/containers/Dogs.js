@@ -49,10 +49,10 @@ export function Dogs() {
         console.log('getting dogs from server')
         const requestOptions = generateLocalRequestOptions('GET');
 
-        const response = await fetch('http://localhost:4000/getdogs', requestOptions)
+        const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/getdogs`, requestOptions)
+        const result = await response.json();
 
         if (response.ok) {
-            const result = await response.json();
             const dogsData = [];
             result.forEach(dog => dogsData.push(({
                 id: dog.dog_id,
@@ -65,8 +65,9 @@ export function Dogs() {
             })))
             setDogs(dogsData);
         } else {
-            setSimpleErrorMsg(response?.statusText)
-            console.log(response?.statusText)
+            setSimpleErrorMsg(result)
+            console.log(response.statusText)
+            console.log(result)
         }
     }
 
@@ -245,10 +246,6 @@ export function Dogs() {
                     }
                 } else {
                     storageMethods.uploadPicture(result)
-                    //const successfullyUploaded = await storageMethods.uploadPicture(result)
-                    //if (successfullyUploaded) {
-                    //    getDogsFromLocalServer();
-                    //}
                 }
                 break;
             default:

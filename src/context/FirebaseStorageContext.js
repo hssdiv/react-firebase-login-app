@@ -92,16 +92,18 @@ export function FirebaseStorageProvider({ children }) {
 
                         const requestOptions = generateLocalRequestOptions('POST', customDog);
 
-                        const response = await fetch('http://localhost:4000/savedog', requestOptions)
-                        if (response) {
-                            const result = await response.json();
+                        const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/savedog`, requestOptions)
+                        const result = await response.json();
+
+                        if (response.ok) {
                             console.log('response from server:')
                             console.log(result)
+                            dispatch({ type: 'DOG_PICTURE_UPLOADED' })
+                            return true
                         } else {
-                            throw new Error('response from server is null');
+                            throw new Error(`error: ${result}`);
                         }
-                        dispatch({ type: 'DOG_PICTURE_UPLOADED' })
-                        return true
+                        
                     }
 
 

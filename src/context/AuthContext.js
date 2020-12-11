@@ -41,8 +41,8 @@ export function AuthProvider({ children }) {
     const login = async () => {
         try {
             const requestOptions = generateLocalRequestOptions('GET');
-            
-            const response = await fetch('http://localhost:4000/login?email=a&password=a', requestOptions)
+
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/login?email=a&password=a`, requestOptions)
             console.log(response)
             if (response.ok) {
                 const result = await response.json();
@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
                 throw new Error(response.statusText);
             }
         } catch (err) {
-            console.log(`error: ${err.message}`)
+            console.log(`login error: ${err.message}`)
         }
     }
 
@@ -68,20 +68,22 @@ export function AuthProvider({ children }) {
                 } else {
                     const requestOptions = generateLocalRequestOptions('GET');
 
-                    const response = await fetch('http://localhost:4000/login?' + new URLSearchParams({
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/login?` + new URLSearchParams({
                         email: login,
                         password: password
                     }), requestOptions)
+                    const result = await response.json();
 
-                    if (response?.ok) {
-                        const result = await response.json();
+                    if (response.ok) {
                         console.log('response from server:')
                         console.log(result)
-                    } else {
-                        throw new Error(response?.statusText);
-                    }
-                    dispatch({ type: 'USER_LOGGED_IN', email: login })
+                        dispatch({ type: 'USER_LOGGED_IN', email: login })
                     return { result: true }
+                    } else {
+                        console.log(response.statusText)
+                        console.log(result)
+                        throw new Error(`error: ${result}`);
+                    }
                 }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
@@ -98,19 +100,20 @@ export function AuthProvider({ children }) {
                         password: password
                     });
 
-                    const response = await fetch('http://localhost:4000/register', requestOptions)
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/register`, requestOptions)
+                    const result = await response.json();
 
-                    if (response?.ok) {
-                        const result = await response.json();
+                    if (response.ok) {
                         console.log('response from server:')
                         console.log(result)
+                        dispatch({ type: 'USER_REGISTERED', email: login })
+                        return { result: true }
                     } else {
-                        throw new Error(response?.statusText);
+                        console.log(response.statusText)
+                        console.log(result)
+                        throw new Error(`error: ${result}`);
                     }
-                    dispatch({ type: 'USER_REGISTERED', email: login })
                 }
-
-                return { result: true }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
             }
@@ -123,15 +126,15 @@ export function AuthProvider({ children }) {
                 } else {
                     const requestOptions = generateLocalRequestOptions('GET');
 
-                    const response = await fetch('http://localhost:4000/logout', requestOptions)
+                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/logout`, requestOptions)
 
-                    if (response?.ok) {
+                    if (response.ok) {
                         const result = await response.json();
                         console.log('response from server:')
                         console.log(result)
                         dispatch({ type: 'USER_LOGGED_OUT' })
                     } else {
-                        throw new Error(response?.statusText);
+                        throw new Error(response.statusText);
                     }
                 }
             } catch(err) {
