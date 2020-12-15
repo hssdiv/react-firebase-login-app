@@ -1,5 +1,4 @@
 import React, { useReducer, useEffect, createContext } from 'react'
-//import auth from '../config/firebase'
 import AuthApi from '../api/ExpressAuthApi'
 
 const reducer = (state, action) => {
@@ -32,14 +31,6 @@ export function AuthProvider({ children }) {
             }
         }
         initialLogin();
-
-        // const unregisterAuthObserver = auth.onAuthStateChanged(user => {
-        //     console.log('auth state change detected');
-        //     if (user) {
-        //         dispatch({ type: 'USER_LOGGED_IN', email: user.email })
-        //     }
-        // })
-        // return () => unregisterAuthObserver()
     }, [])
 
     const session = {
