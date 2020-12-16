@@ -209,6 +209,7 @@ export function Dogs() {
         switch (result.action) {
             case 'MODAL_CLOSED':
                 setDogAddModalVisible(false);
+                setDeleteAllModalIsVisible(false);
                 break;
             case 'MODAL_CONFIRM_PRESSED':
                 if (result.type === 'RANDOM') {
@@ -260,11 +261,11 @@ export function Dogs() {
             </h1>
             <div>
                 {deleteCheckedEnabled ?
-                    <button className='deleteDogsButton' onClick={handleDeleteButton}>Delete selected</button>
+                    <span className='deleteDogsButton' onClick={handleDeleteButton}>Delete selected</span>
                     :
-                    <button className='deleteDogsButton' disabled style={{ opacity: '0.5' }}>Delete selected</button>
+                    <span className='deleteDogsButton' disabled style={{ opacity: '0.5' }}>Delete selected</span>
                 }
-                <button className='deleteAllDogsButton' onClick={handleDeleteAllButton}>Delete all</button>
+                <span className='deleteAllDogsButton' onClick={handleDeleteAllButton}>Delete all</span>
             </div>
 
             <SimpleErrorMessage
