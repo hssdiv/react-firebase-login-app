@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react'
 import auth, { storage, firestore } from '../config/firebase'
 import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
-import { generateLocalRequestOptions } from '../util/LocalRequestOptions'
+import DogApi from '../api/ExpressDogApi'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -90,29 +90,20 @@ export function FirebaseStorageProvider({ children }) {
                         //data:image/jpeg;base64,/9j/4AAQSkZJRg
                         const customDog = {...addCustomdDog, picture: picture}
 
-                        const requestOptions = generateLocalRequestOptions('POST', customDog);
-
-                        const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/savedog`, requestOptions)
-                        const result = await response.json();
-
-                        if (response.ok) {
-                            console.log('response from server:')
-                            console.log(result)
+                        const result = await DogApi.saveDog(customDog)
+                        if (result.successfull) {
                             dispatch({ type: 'DOG_PICTURE_UPLOADED' })
-                            return true
                         } else {
-                            throw new Error(`error: ${result}`);
+                            dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: result.errorMessage })
                         }
-                        
                     }
-
-
                 }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
             }
         },
         deleteByUrl: async (url) => {
+            // TODO
             try {
                 const imageRef = storage.refFromURL(url)
                 await imageRef.delete();

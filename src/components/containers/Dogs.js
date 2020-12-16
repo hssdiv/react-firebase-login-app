@@ -7,7 +7,7 @@ import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext, FirebaseStorageContext, FirestoreContext } from '../../context/'
 import './../../styles/Dogs.css'
 import { DogAddModal } from '../DogCards/DogAddModal'
-import { generateLocalRequestOptions } from '../../util/LocalRequestOptions'
+import DogApi from '../../api/ExpressDogApi'
 
 export function Dogs() {
     const currentScreenWidth = GetWidth()
@@ -47,30 +47,13 @@ export function Dogs() {
 
     const getDogsFromLocalServer = async () => {
         console.log('getting dogs from server')
-        const requestOptions = generateLocalRequestOptions('GET');
-
-        const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/getdogs`, requestOptions)
-        const result = await response.json();
-
-        if (response.ok) {
-            const dogsData = [];
-            result.forEach(dog => dogsData.push(({
-                id: dog.dog_id,
-                breed: dog.breed,
-                subBreed: dog.subbreed,
-                imageUrl: dog.imageurl,
-                custom: dog.custom,
-                picture: dog.picture,
-                timestamp: dog.timestamp,
-            })))
-            setDogs(dogsData);
+        const result = await DogApi.getDogs()
+        if (result.successful) {
+            setDogs(result.dogsData);
         } else {
-            setSimpleErrorMsg(result)
-            console.log(response.statusText)
-            console.log(result)
+            setSimpleErrorMsg(result.errorMessage)
         }
     }
-
 
     useEffect(() => {
         if (storageStatus) {

@@ -1,7 +1,6 @@
-import React, { useReducer, useContext } from 'react'
-import { FirebaseStorageContext } from './FirebaseStorageContext'
-import { firestore } from '../config/firebase'
-import { generateLocalRequestOptions } from '../util/LocalRequestOptions'
+import React, { useReducer } from 'react'
+// import { FirebaseStorageContext } from './FirebaseStorageContext'
+import DogApi from '../api/ExpressDogApi'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -32,184 +31,71 @@ export const FirestoreContext = React.createContext();
 
 export function FirestoreProvider({ children }) {
 
-    const { storageMethods } = useContext(FirebaseStorageContext)
+    // const { storageMethods } = useContext(FirebaseStorageContext)
 
     const initialState = null;
     const [firestoreStatus, dispatch] = useReducer(reducer, initialState)
 
     const firestoreMethods = {
         addDogToFirestore: async (dogToAdd) => {
-            if (process.env.REACT_APP_SERVER === "GOOGLE") {
-                try {
-                    const db = firestore();
-                    db.collection('dogs').add(dogToAdd);
-                    dispatch({ type: 'FIRESTORE_CREATE' })
-                    return { result: true }
-                } catch (error) {
-                    dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
-                    return { result: false, errorMessage: error.message }
-                }
+            const result = await DogApi.saveDog(dogToAdd)
+            if (result.successful) {
+                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                return { result: true }
             } else {
-                try {
-                    const requestOptions = generateLocalRequestOptions('POST', dogToAdd);
- 
-                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/savedog`, requestOptions)
-
-                    console.log(response)
-                    const result = await response.json();
-                    if (response.ok) {
-                        console.log('response from server:')
-                        console.log(result)
-                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                        return { result: true }
-                    } else {
-                        throw new Error(result);
-                    }
-                } catch (error) {
-                    dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
-                    return { result: false, errorMessage: error.message }
-                }
+                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
+                return { result: false, errorMessage: result.errorMessage }
             }
-
         },
         updateDog: async (updatedDog, id) => {
-            if (process.env.REACT_APP_SERVER === "GOOGLE") {
-                const db = firestore();
-                db.collection('dogs').doc(id).set(updatedDog);
+            const updatedDogWithId = { dog_id: id, ...updatedDog }
+            console.log(JSON.stringify(updatedDogWithId))
+
+            const result = await DogApi.updateDog(updatedDogWithId)
+            if (result.successful) {
+                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                return { result: true }
             } else {
-                const updatedDogWithId = { dog_id: id, ...updatedDog }
-                console.log(JSON.stringify(updatedDogWithId))
-                try {
-                    const requestOptions = generateLocalRequestOptions('PATCH', updatedDogWithId);
-
-                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/updatedog`, requestOptions)
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        console.log('response from server:')
-                        console.log(result)
-                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                    } else {
-                        throw new Error(`error: ${result}`);
-                    }
-                } catch (error) {
-                    dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
-                    console.log(error.message)
-                }
+                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
+                return { result: false, errorMessage: result.errorMessage }
             }
         },
         deleteDogFromFirestore: async (dogData) => {
-            if (process.env.REACT_APP_SERVER === "GOOGLE") {
-                const db = firestore();
-                db.collection('dogs').doc(dogData.id).delete().then(function () {
-                    console.log('Dog successfully deleted!');
-                }).catch(function (error) {
-                    console.error('Error removing dog: ', error);
-                });
+            const result = await DogApi.deleteDog(dogData.id)
+            if (result.successful) {
+                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                // TODO
+                // if (dogData.custom) {
+                //      storageMethods.deleteByUrl(dogData.imageUrl)
+                // }
+                return { result: true }
             } else {
-                try {
-                    const requestOptions = generateLocalRequestOptions('DELETE');
-
-                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedog?` + new URLSearchParams({
-                        dog_id: dogData.id
-                    }), requestOptions)
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        console.log('response from server:')
-                        console.log(result)
-                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                    } else {
-                        throw new Error(`error: ${result}`);
-                    }
-                } catch (error) {
-                    dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
-                    console.log(error.message)
-                }
-            }
-            if (dogData.custom) {
-                storageMethods.deleteByUrl(dogData.imageUrl)
+                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
+                return { result: false, errorMessage: result.errorMessage }
             }
         },
         deleteSelected: async (dogsChecked) => {
-            if (process.env.REACT_APP_SERVER === "GOOGLE") {
-                const db = firestore();
+            const dogs_ids = []
+            dogsChecked.filter(dog => dog.checked)
+                .map(dog => dogs_ids.push(dog.id.toString()))
 
-                db.collection('dogs').get().then(function (querySnapshot) {
-                    var batch = db.batch();
-
-                    querySnapshot.forEach(function (doc) {
-                        if (dogsChecked.find(checkedDog => ((doc.id === checkedDog.id))).checked) {
-                            batch.delete(doc.ref);
-
-                            storageMethods.deleteByUrl(doc.data().imageUrl)
-                        }
-                    });
-                    dispatch({ type: 'FIRESTORE_BATCH_DELETE' })
-                    return batch.commit();
-                }).then(function () {
-                    console.log('batch delete dog(s) completed')
-                });
+            const result = await DogApi.deleteSelectedDogs(dogs_ids)
+            if (result.successful) {
+                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                return { result: true }
             } else {
-                try {
-                    const dogs_ids = []
-                    dogsChecked.filter(dog => dog.checked)
-                        .map(dog => dogs_ids.push(dog.id.toString()))
-
-                    // console.log(JSON.stringify({ dogs_ids: dogs_ids }))
-
-                    const requestOptions = generateLocalRequestOptions('DELETE', { dogs_ids: dogs_ids });
-
-                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deleteselecteddogs`, requestOptions)
-                    const result = await response.json();
-
-                    if (response.ok) {    
-                        console.log('response from server:')
-                        console.log(result)
-                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                    } else {
-                        throw new Error(`error: ${result}`);
-                    }
-                } catch (error) {
-                    dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
-                    console.log(error.message)
-                }
+                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
+                return { result: false, errorMessage: result.errorMessage }
             }
         },
         deleteAll: async () => {
-            if (process.env.REACT_APP_SERVER === "GOOGLE") {
-                const db = firestore();
-
-                db.collection('dogs').get().then(function (querySnapshot) {
-                    var batch = db.batch();
-
-                    querySnapshot.forEach(function (doc) {
-                        batch.delete(doc.ref);
-                        storageMethods.deleteByUrl(doc.data().imageUrl)
-                    });
-                    dispatch({ type: 'FIRESTORE_BATCH_DELETE' })
-                    return batch.commit();
-                }).then(function () {
-                    console.log('batch delete dog(s) completed')
-                });
+            const result = await DogApi.deleteDogs()
+            if (result.successful) {
+                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                return { result: true }
             } else {
-                try {
-                    const requestOptions = generateLocalRequestOptions('DELETE');
-
-                    const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedogs`, requestOptions)
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        console.log('response from server:')
-                        console.log(result)
-                        dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                    } else {
-                        throw new Error(`error: ${result}`);
-                    }
-                } catch (error) {
-                    dispatch({ type: 'FIRESTORE_ERROR', error: error.message })
-                    console.log(error.message)
-                }
+                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
+                return { result: false, errorMessage: result.errorMessage }
             }
         }
     }
@@ -225,3 +111,20 @@ export function FirestoreProvider({ children }) {
         </FirestoreContext.Provider>
     );
 }
+
+
+
+
+/*
+
+const result = await DogApi.deleteDog(dogData.id)
+            if (result.successful) {
+                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
+                return { result: true }
+            } else {
+                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
+                return { result: false, errorMessage: result.errorMessage }
+            }
+
+
+*/
