@@ -5,7 +5,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('GET');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/login?` + new URLSearchParams({
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/login?` + new URLSearchParams({
                 email: login,
                 password: password
             }), requestOptions)
@@ -31,7 +31,7 @@ export default {
                 password: password
             });
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/register`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/register`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -52,7 +52,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('GET');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/logout`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/logout`, requestOptions)
 
             if (response.ok) {
                 const result = await response.json();
@@ -70,7 +70,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('GET');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/login?email=a&password=a`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/login?email=a&password=a`, requestOptions)
             console.log(response)
             if (response.ok) {
                 const result = await response.json();
