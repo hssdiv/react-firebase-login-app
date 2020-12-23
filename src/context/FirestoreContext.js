@@ -64,10 +64,6 @@ export function FirestoreProvider({ children }) {
             const result = await DogApi.deleteDog(dogData.id)
             if (result.successful) {
                 dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                // TODO
-                // if (dogData.custom) {
-                //      storageMethods.deleteByUrl(dogData.imageUrl)
-                // }
                 return { result: true }
             } else {
                 dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })

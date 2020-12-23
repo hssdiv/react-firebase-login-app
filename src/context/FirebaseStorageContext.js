@@ -29,6 +29,7 @@ export function FirebaseStorageProvider({ children }) {
 
     const storageMethods = {
         uploadPicture: async (result) => {
+            const data = result
             try {
                 if (process.env.REACT_APP_SERVER === 'GOOGLE') {
                     const storageRef = storage.ref();
@@ -71,50 +72,24 @@ export function FirebaseStorageProvider({ children }) {
 
                     return true
                 } else {
-                    const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, custom: true }
-
-                    function getBase64(file) {
-                        var reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = function () {
-                            console.log();
-                            sendCustomDogToServer(reader.result)
-                        };
-                        reader.onerror = function (error) {
-                            console.log('Error: ', error);
-                        };
+                    const addCustomdDog = {
+                        breed: data.breed,
+                        subBreed: data.subBreed,
+                        custom: true,
                     }
-                    getBase64(result.dogPicture)
+                    const customDog = { ...addCustomdDog, picture: data.dogPicture }
 
-                    async function sendCustomDogToServer(picture) {
-                        //data:image/jpeg;base64,/9j/4AAQSkZJRg
-                        const customDog = {...addCustomdDog, picture: picture}
-
-                        const result = await DogApi.saveDog(customDog)
-                        if (result.successfull) {
-                            dispatch({ type: 'DOG_PICTURE_UPLOADED' })
-                        } else {
-                            dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: result.errorMessage })
-                        }
+                    const result = await DogApi.saveDog(customDog)
+                    if (result.successful) {
+                        dispatch({ type: 'DOG_PICTURE_UPLOADED' })
+                    } else {
+                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: result.errorMessage })
                     }
                 }
             } catch (error) {
                 return { result: false, errorMessage: error.message }
             }
         },
-        deleteByUrl: async (url) => {
-            // TODO
-            try {
-                const imageRef = storage.refFromURL(url)
-                await imageRef.delete();
-                dispatch({ type: 'DOG_PICTURE_DELETED' })
-                return { result: true }
-            } catch (error) {
-                //dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message})
-                //console.log(error.message)
-                return { result: false, errorMessage: error.message }
-            }
-        }
     }
 
     return (

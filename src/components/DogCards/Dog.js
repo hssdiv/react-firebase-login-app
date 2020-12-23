@@ -83,7 +83,13 @@ export function Dog({ dogData, handleChecked }) {
             >
                 {dogData.custom ?
                     //<img className='dogImage'src={`data:image/jpeg;base64,${dogData.picture}`} />
-                    <img className='dogImage' alt='dog' src={`data:image/jpeg;base64,${dogData.picture}`} />
+                    //<img className='dogImage' alt='dog' src={`data:image/jpeg;base64,${dogData.picture}`} />
+                    <div
+                        className='dogImage'
+                        style={
+                            { backgroundImage: 'url(' + dogData.imageUrl + ')' }
+                        }
+                    />
                     :
                     <div
                         className='dogImage'

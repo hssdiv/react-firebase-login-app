@@ -1,11 +1,12 @@
 import { generateLocalRequestOptions } from '../util/LocalRequestOptions'
+import { generateLocalRequestOptionsCustom } from '../util/LocalRequestOptionsCustom';
 
 export default {
     getDogs: async () => {
         try {
             const requestOptions = generateLocalRequestOptions('GET');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/getdogs`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/get`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -19,21 +20,39 @@ export default {
                     picture: dog.picture,
                     timestamp: dog.timestamp,
                 })))
-                return { successful: true, dogsData: dogsData}
+                return { successful: true, dogsData: dogsData }
             } else {
                 console.log(response.statusText)
                 console.log(result)
                 throw new Error(`error ${result}`)
             }
         } catch (error) {
-            return { successful: true, errorMessage: error.message}
+            return { successful: true, errorMessage: error.message }
         }
     },
     saveDog: async (dogToSave) => {
         try {
-            const requestOptions = generateLocalRequestOptions('POST', dogToSave);
+            function getFormData(object) {
+                let formData = new FormData();
+                Object.keys(object).forEach(key => {
+                    if (key === 'picture') {
+                        console.log('picture!!!')
+                        console.log(object[key].name)
+                        formData.append(key, object[key], object[key].name)
+                    } else {
+                        formData.append(key, object[key])
+                    }
+                }
+                );
+                return formData;
+            }
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/savedog`, requestOptions)
+            console.log(dogToSave)
+            const formDogData = getFormData(dogToSave)
+
+            const requestOptions = generateLocalRequestOptionsCustom('POST', formDogData);
+
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dog/save`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -51,7 +70,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('PATCH', updatedDogWithId);
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/updatedog`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dog/update`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -70,7 +89,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('DELETE');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedog?` + new URLSearchParams({
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dog/delete?` + new URLSearchParams({
                 dog_id: dogId
             }), requestOptions)
             const result = await response.json();
@@ -91,7 +110,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('DELETE', { dogs_ids: dogs_ids });
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deleteselecteddogs`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/delete/selected`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -110,7 +129,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('DELETE');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/deletedogs`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/delete/all`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
