@@ -1,6 +1,6 @@
 export const generateLocalRequestOptionsCustom = (type, object) => {
     
-    console.log('vau')
+    console.log('inside generateLocalRequestOptionsCustom')
     //console.log(new URLSearchParams(object).toString())
     return {
         method: type,

@@ -52,7 +52,7 @@ export default {
 
             const requestOptions = generateLocalRequestOptionsCustom('POST', formDogData);
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dog/save`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/save`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -70,7 +70,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('PATCH', updatedDogWithId);
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dog/update`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/update`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -89,7 +89,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('DELETE');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dog/delete?` + new URLSearchParams({
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/delete?` + new URLSearchParams({
                 dog_id: dogId
             }), requestOptions)
             const result = await response.json();
