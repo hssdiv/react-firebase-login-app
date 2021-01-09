@@ -87,7 +87,7 @@ export function Dog({ dogData, handleChecked }) {
                     <div
                         className='dogImage'
                         style={
-                            { backgroundImage: 'url(' + dogData.imageUrl + ')' }
+                            { backgroundImage: 'url(' + process.env.REACT_APP_LOCAL_SERVER_ADRESS + '/' + dogData.imageUrl + ')' }
                         }
                     />
                     :

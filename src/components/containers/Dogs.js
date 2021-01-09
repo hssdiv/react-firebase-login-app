@@ -7,7 +7,7 @@ import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext, FirebaseStorageContext, FirestoreContext } from '../../context/'
 import './../../styles/Dogs.css'
 import { DogAddModal } from '../DogCards/DogAddModal'
-import DogApi from '../../api/ExpressDogApi'
+import DogApi from '../../api/ServerDogApi'
 
 export function Dogs() {
     const currentScreenWidth = GetWidth()

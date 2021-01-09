@@ -12,10 +12,10 @@ export default {
             if (response.ok) {
                 const dogsData = [];
                 result.forEach(dog => dogsData.push(({
-                    id: dog.dog_id,
+                    id: dog.id,
                     breed: dog.breed,
-                    subBreed: dog.subbreed,
-                    imageUrl: dog.imageurl,
+                    subBreed: dog.subBreed,
+                    imageUrl: dog.imageUrl,
                     custom: dog.custom,
                     picture: dog.picture,
                     timestamp: dog.timestamp,
@@ -90,7 +90,7 @@ export default {
             const requestOptions = generateLocalRequestOptions('DELETE');
 
             const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/dogs/delete?` + new URLSearchParams({
-                dog_id: dogId
+                id: dogId
             }), requestOptions)
             const result = await response.json();
 

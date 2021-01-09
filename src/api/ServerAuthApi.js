@@ -3,12 +3,12 @@ import { generateLocalRequestOptions } from '../util/LocalRequestOptions'
 export default {
     login: async (login, password) => {
         try {
-            const requestOptions = generateLocalRequestOptions('GET');
-
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/login?` + new URLSearchParams({
+            const requestOptions = generateLocalRequestOptions('POST', {
                 email: login,
                 password: password
-            }), requestOptions)
+            });
+
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/login`, requestOptions)
             const result = await response.json();
 
             if (response.ok) {
@@ -70,7 +70,7 @@ export default {
         try {
             const requestOptions = generateLocalRequestOptions('GET');
 
-            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/login?email=a&password=a`, requestOptions)
+            const response = await fetch(`${process.env.REACT_APP_LOCAL_SERVER_ADRESS}/auth/`, requestOptions)
             console.log(response)
             if (response.ok) {
                 const result = await response.json();

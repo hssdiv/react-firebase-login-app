@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react'
 import auth, { storage, firestore } from '../config/firebase'
 import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
-import DogApi from '../api/ExpressDogApi'
+import DogApi from '../api/ServerDogApi'
 
 const reducer = (state, action) => {
     switch (action.type) {

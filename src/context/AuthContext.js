@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect, createContext } from 'react'
-import AuthApi from '../api/ExpressAuthApi'
+import AuthApi from '../api/ServerAuthApi'
 
 const reducer = (state, action) => {
     switch (action.type) {

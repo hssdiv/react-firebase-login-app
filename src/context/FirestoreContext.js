@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react'
 // import { FirebaseStorageContext } from './FirebaseStorageContext'
-import DogApi from '../api/ExpressDogApi'
+import DogApi from '../api/ServerDogApi'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -48,7 +48,7 @@ export function FirestoreProvider({ children }) {
             }
         },
         updateDog: async (updatedDog, id) => {
-            const updatedDogWithId = { dog_id: id, ...updatedDog }
+            const updatedDogWithId = { id, ...updatedDog }
             console.log(JSON.stringify(updatedDogWithId))
 
             const result = await DogApi.updateDog(updatedDogWithId)
