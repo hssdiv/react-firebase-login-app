@@ -76,7 +76,7 @@ export default {
                 const result = await response.json();
                 console.log('response from server:')
                 console.log(result)
-                return { successful: true }
+                return { successful: true, email: result.payload.email }
                 // dispatch({ type: 'USER_LOGGED_IN', email: result.email })
             } else {
                 throw new Error(response.statusText);

@@ -12,7 +12,7 @@
 
 .dogInput {
   width: 100%;
-  padding: 12px 20px;
+  padding: 12px 2px;
   margin: 8px 0;
   display: inline-block;
   border: 1px solid #ccc;
@@ -65,7 +65,7 @@
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
+  overflow: hidden; /* Enable scroll if needed */
   background-color: rgba(71, 78, 93, 0.9);
   padding-top: 50px;
 }
@@ -101,7 +101,7 @@
 }
 
 /* Change styles for cancel button and delete button on extra small screens */
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 970px) {
   .modalCancelButton, .modalConfirmButton {
      width: 100%;
   }

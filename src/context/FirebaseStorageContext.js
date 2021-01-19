@@ -79,7 +79,7 @@ export function FirebaseStorageProvider({ children }) {
                     }
                     const customDog = { ...addCustomdDog, picture: data.dogPicture }
 
-                    const result = await DogApi.saveDog(customDog)
+                    const result = await DogApi.saveDog2(customDog)
                     if (result.successful) {
                         dispatch({ type: 'DOG_PICTURE_UPLOADED' })
                     } else {
