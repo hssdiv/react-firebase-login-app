@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react'
-import auth, { storage, firestore } from '../config/firebase'
-import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
-import DogApi from '../api/ServerDogApi'
+//import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
+import ServerDogApi from '../api/ServerDogApi'
+import { toBase64, createChunksFromBase64 } from '../util'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -13,9 +13,37 @@ const reducer = (state, action) => {
             return state = { status: 'DELETED' }
         case 'FIREBASE_STORAGE_ERROR':
             console.log('storage reducer: firebase storage error')
-            return state = { status: 'ERROR', errorMessage: action.errorMessage }
+            return state = {
+                status: 'ERROR',
+                errorMessage: action.errorMessage
+            }
         case 'UPDATE_PROGRESS_BAR':
-            return state = { status: 'PROGRESS', percentage: action.percentage }
+            return state = {
+                status: 'PROGRESS',
+                percentage: action.percentage
+            }
+        case 'PAUSE_UPLOAD_DATA':
+            return state = {
+                pausedDog: action.pausedDog,
+                pausedPosition: action.pausedPosition,
+                pausedChunks: action.pausedChunks,
+            }
+        case 'CLEAR_PAUSE_DATA':
+            return state = {
+                pausedDog: {},
+                pausedPosition: -1,
+                pausedChunks: [],
+                paused: false,
+                canceled: false,
+            }
+        case 'PAUSE_UPLOAD':
+            return state = {
+                paused: true,
+            }
+        case 'CANCEL_UPLOAD':
+            return state = {
+                canceled: true,
+            }
         default:
             return state
     }
@@ -24,70 +52,111 @@ const reducer = (state, action) => {
 export const FirebaseStorageContext = React.createContext();
 
 export function FirebaseStorageProvider({ children }) {
-    const initialState = null;
+    const initialState = {
+        paused: false,
+        canceled: false,
+        pausedDog: {},
+        pausedPosition: -1,
+        pausedChunks: [],
+        percentage: 0,
+    };
     const [storageStatus, dispatch] = useReducer(reducer, initialState)
 
     const storageMethods = {
         uploadPicture: async (result) => {
             const data = result
             try {
-                if (process.env.REACT_APP_SERVER === 'GOOGLE') {
-                    const storageRef = storage.ref();
+                const addCustomdDog = {
+                    breed: data.breed,
+                    subBreed: data.subBreed,
+                    custom: true,
+                }
+                const customDog = {
+                    ...addCustomdDog,
+                    picture: data.dogPicture
+                }
 
-                    const uniqueGeneratedName = UniqueIdGenerator();
+                console.log(customDog)
 
-                    const fileRef = storageRef.child(auth.currentUser.uid).child(uniqueGeneratedName);
-                    var task = fileRef.put(result.dogPicture);
+                const name = customDog.picture.name; // use uniqueIdGen?
+                const base64file = await toBase64(data.dogPicture);
+                const resultInitial = await ServerDogApi.saveDogCustomInitial(name, base64file)
+                //check initial?
+                if (!resultInitial.successful) {
+                    throw new Error(resultInitial.errorMessage);
+                }
 
-                    task.on('state_changed',
-                        function progress(snapshot) {
-                            let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            console.log('uploaded ' + percentage + '%');
-                            dispatch({ type: 'UPDATE_PROGRESS_BAR', percentage: percentage })
-                            //progressRef.current.value = percentage;
-                        },
-
-                        function error(err) {
-                            console.error('upload progress error:' + err)
-
-                            dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err })
-                        },
-
-                        async function complete() {
-                            console.log('upload complete');
-
-                            const fileUrl = await fileRef.getDownloadURL()
-
-                            uploadCustomDogToFirestore(result, fileUrl);
-
-                            dispatch({ type: 'DOG_PICTURE_UPLOADED' })
-
-                            async function uploadCustomDogToFirestore(result, fileUrl) {
-                                const addCustomdDog = { breed: result.breed, subBreed: result.subBreed, imageUrl: fileUrl, custom: true }
-
-                                const db = firestore();
-                                db.collection('dogs').add(addCustomdDog);
-                            }
+                const chunks = createChunksFromBase64(base64file);
+                for (const chunk of chunks) {
+                    if (storageStatus.canceled) {
+                        dispatch({ type: 'CLEAR_PAUSE_DATA' })
+                        await ServerDogApi.cleanUpCanceled(storageStatus.pausedDog.picture.name);
+                        break;
+                    }
+                    if (storageStatus.paused) {
+                        const position = chunks.indexOf(chunk);
+                        dispatch({
+                            type: 'PAUSE_UPLOAD_DATA',
+                            pausedPosition: position,
+                            pausedDog: customDog,
+                            pausedChunks: chunks
                         });
+                        break;
+                    }
+                    const resultChunk = await ServerDogApi.saveDogCustomChunk(name, chunk);
+                    if (!resultChunk.successful) {
+                        throw new Error(resultChunk.errorMessage);
+                    }
+                    
+                    console.log(`progress: ${resultChunk.result}`)
 
-                    return true
+                    dispatch({
+                        type: 'UPDATE_PROGRESS_BAR',
+                        percentage: resultChunk.result
+                    });
+                }
+                const resultFinal = await ServerDogApi.saveDogCustomFinal(customDog)
+
+                if (resultFinal.successful) {
+                    dispatch({ type: 'DOG_PICTURE_UPLOADED' })
                 } else {
-                    const addCustomdDog = {
-                        breed: data.breed,
-                        subBreed: data.subBreed,
-                        custom: true,
-                    }
-                    const customDog = { ...addCustomdDog, picture: data.dogPicture }
-
-                    const result = await DogApi.saveDog2(customDog)
-                    if (result.successful) {
-                        dispatch({ type: 'DOG_PICTURE_UPLOADED' })
-                    } else {
-                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: result.errorMessage })
-                    }
+                    dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: result.errorMessage })
                 }
             } catch (error) {
+                console.log(error);
                 return { result: false, errorMessage: error.message }
+            }
+        },
+        pausePictureUpload: () => {
+            dispatch({ type: 'PAUSE_UPLOAD' });
+        },
+        cancelPictureUpload: () => {
+            dispatch({ type: 'CANCEL_UPLOAD' });
+        },
+        resumePictureUpload: async () => {
+            storageStatus.paused = false;
+            for (let i = storageStatus.pausedPosition; i < storageStatus.pausedChunks.length; i++) {
+                const chunk = storageStatus.pausedChunks[i];
+
+                if (storageStatus.canceled) {
+                    dispatch({ type: 'REMOVE_PAUSE_STATE' })
+                    await ServerDogApi.cleanUpCanceled(storageStatus.pausedDog.picture.name);
+                    break;
+                }
+                if (storageStatus.paused) {
+                    dispatch({
+                        type: 'PAUSE_CUSTOM_UPLOAD',
+                        pausedPosition: i,
+                    });
+                    break;
+                }
+
+                const resultChunk = await ServerDogApi.saveDogCustomChunk(storageStatus.pausedDog.picture.name, chunk);
+                console.log(` progress: ${resultChunk.result}`)
+                dispatch({
+                    type: 'UPDATE_PROGRESS_BAR',
+                    percentage: resultChunk.result
+                });
             }
         },
     }

@@ -20,17 +20,38 @@
   color: white;
 }
 
+.pauseUploadButton {
+  color: white;
+}
+
+.cancelUploadButton {
+  color: white;
+}
+
 .progressbar {
   -webkit-appearance: none;
   appearance: none;
-  width: 100%;
+  flex-basis: 95%;
+}
+
+.progressbar2 {
+  -webkit-appearance: none;
+  appearance: none;
+  flex-basis: 95%;
 }
 
 .progressbar-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
   background: rgb(73, 79, 82);
 }
 
 .progressbar::-webkit-progress-bar{
+  background-color: rgb(73, 79, 82);
+}
+
+.progressbar2::-webkit-progress-bar{
   background-color: rgb(73, 79, 82);
 }
 
@@ -39,7 +60,6 @@
   background-color: green;
 }
 
-.progressbar2::-webkit-progress-value{
-  transition: width 0.5s; 
+.progressbar2::-webkit-progress-value{ 
   background-color: rgb(73, 79, 82);
 }

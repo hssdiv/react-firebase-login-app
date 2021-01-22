@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react'
 // import { FirebaseStorageContext } from './FirebaseStorageContext'
-import DogApi from '../api/ServerDogApi'
+import ServerDogApi from '../api/ServerDogApi'
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -38,7 +38,7 @@ export function FirestoreProvider({ children }) {
 
     const firestoreMethods = {
         addDogToFirestore: async (dogToAdd) => {
-            const result = await DogApi.saveDog(dogToAdd)
+            const result = await ServerDogApi.saveDog(dogToAdd)
             if (result.successful) {
                 dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 return { result: true }
@@ -51,7 +51,7 @@ export function FirestoreProvider({ children }) {
             const updatedDogWithId = { id, ...updatedDog }
             console.log(JSON.stringify(updatedDogWithId))
 
-            const result = await DogApi.updateDog(updatedDogWithId)
+            const result = await ServerDogApi.updateDog(updatedDogWithId)
             if (result.successful) {
                 dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 return { result: true }
@@ -61,7 +61,7 @@ export function FirestoreProvider({ children }) {
             }
         },
         deleteDogFromFirestore: async (dogData) => {
-            const result = await DogApi.deleteDog(dogData.id)
+            const result = await ServerDogApi.deleteDog(dogData.id)
             if (result.successful) {
                 dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 return { result: true }
@@ -75,7 +75,7 @@ export function FirestoreProvider({ children }) {
             dogsChecked.filter(dog => dog.checked)
                 .map(dog => dogs_ids.push(dog.id.toString()))
 
-            const result = await DogApi.deleteSelectedDogs(dogs_ids)
+            const result = await ServerDogApi.deleteSelectedDogs(dogs_ids)
             if (result.successful) {
                 dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 return { result: true }
@@ -85,7 +85,7 @@ export function FirestoreProvider({ children }) {
             }
         },
         deleteAll: async () => {
-            const result = await DogApi.deleteDogs()
+            const result = await ServerDogApi.deleteDogs()
             if (result.successful) {
                 dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
                 return { result: true }
@@ -107,20 +107,3 @@ export function FirestoreProvider({ children }) {
         </FirestoreContext.Provider>
     );
 }
-
-
-
-
-/*
-
-const result = await DogApi.deleteDog(dogData.id)
-            if (result.successful) {
-                dispatch({ type: 'UPDATE_DOGS_FROM_LOCAL_SERVER' })
-                return { result: true }
-            } else {
-                dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
-                return { result: false, errorMessage: result.errorMessage }
-            }
-
-
-*/

@@ -18,7 +18,7 @@ export default {
             } else {
                 console.log(response.statusText)
                 console.log(result)
-                throw new Error(`error: ${result}`);
+                throw new Error(`error: ${result.message}`);
             }
         } catch (error) {
             return { successful: false, errorMessage: error.message }
@@ -42,7 +42,7 @@ export default {
             } else {
                 console.log(response.statusText)
                 console.log(result)
-                throw new Error(`error: ${result}`);
+                throw new Error(`error: ${result.message}`);
             }
         } catch (error) {
             return { successful: false, errorMessage: error.message }

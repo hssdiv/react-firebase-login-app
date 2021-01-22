@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Dog, AddDogCard, DogDeleteModal } from '../DogCards'
 import GetWidth from '../../ui/useWindowSize'
-import { firestore } from '../../config/firebase'
 import Spinner from '../Spinner'
 import SimpleErrorMessage from '../SimpleErrorMessage'
 import { DogsContext, FirebaseStorageContext, FirestoreContext } from '../../context/'
 import './../../styles/Dogs.css'
 import { DogAddModal } from '../DogCards/DogAddModal'
-import DogApi from '../../api/ServerDogApi'
+import ServerDogApi from '../../api/ServerDogApi'
 
 export function Dogs() {
     const currentScreenWidth = GetWidth()
@@ -32,22 +31,12 @@ export function Dogs() {
 
     useEffect(() => {
         console.log('useEffect fetching Dogs from fs...')
-        if (process.env.REACT_APP_SERVER === "GOOGLE") {
-            const db = firestore();
-            const dogListenerUnsubscribe = db.collection('dogs').onSnapshot((snapshot) => {
-                const dogsData = [];
-                snapshot.forEach(doc => dogsData.push(({ id: doc.id, ...doc.data() })))
-                setDogs(dogsData);
-            })
-            return dogListenerUnsubscribe
-        } else {
-            getDogsFromLocalServer()
-        }
+        getDogsFromLocalServer()
     }, [])
 
     const getDogsFromLocalServer = async () => {
         console.log('getting dogs from server')
-        const result = await DogApi.getDogs()
+        const result = await ServerDogApi.getDogs()
         if (result.successful) {
             setDogs(result.dogsData);
         } else {
@@ -62,6 +51,7 @@ export function Dogs() {
                     setSimpleErrorMsg(storageStatus.errorMessage)
                     break
                 case 'UPLOADED':
+                    console.log('calling it it storagestatus useeffect')
                     getDogsFromLocalServer();
                     break;
                 default:
@@ -169,7 +159,6 @@ export function Dogs() {
                 return;
         }
     }
-
 
     useEffect(() => {
         console.log('Getting random dog...')

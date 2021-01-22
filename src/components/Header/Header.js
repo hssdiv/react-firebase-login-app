@@ -16,9 +16,9 @@ export function Header() {
 
     const progressRef = useRef(null)
 
-    const { storageStatus } = useContext(FirebaseStorageContext)
+    const { storageStatus, storageMethods } = useContext(FirebaseStorageContext)
 
-    const [pictureUploaded, setPictureUploaded] = useState(false)
+    const [pictureUploaded, setPictureUploaded] = useState(true)
 
     useEffect(() => {
         if (storageStatus) {
@@ -28,20 +28,27 @@ export function Header() {
                         setPictureUploaded(false)
                     }
                     console.log('setting progress to ' + storageStatus.percentage)
+                    console.log(storageStatus.percentage);
                     progressRef.current.value = storageStatus.percentage;
                     break;
                 case 'UPLOADED':
-                    if (process.env.REACT_APP_SERVER === 'GOOGLE') {
-                        setPictureUploaded(true);
-                        console.log('setting progress back to 0');
-                        //progressRef.current.value = 0;
-                    }
+                    setPictureUploaded(true);
+                    console.log('setting progress back to 0');
+                    progressRef.current.value = 0;
                     break;
                 default:
                     break
             }
         }
     }, [storageStatus])
+
+    const handlePauseUploadButton = () => {
+        storageMethods.pausePictureUpload();
+    }
+
+    const handleCancelUploadButton = () => {
+        storageMethods.cancelPictureUpload();
+    }
 
     return (
         <>
@@ -102,20 +109,31 @@ export function Header() {
                         max="100"
                         ref={progressRef}
                     >
-                        0%
                     </progress>
                 </div>
                 :
                 <div
                     className='progressbar-container'>
+                    <span
+                        className='pauseUploadButton'
+                        onClick={handlePauseUploadButton}
+                    >
+                        &#10074;&#10074;
+                    </span>
                     <progress
                         className="progressbar"
                         value="0"
                         max="100"
                         ref={progressRef}
                     >
-                        0%
-                     </progress>
+                    </progress>
+                    <span
+                        className='cancelUploadButton'
+
+                        onClick={handleCancelUploadButton}
+                    >
+                        &#10006;
+                    </span>
                 </div>
             }
 
