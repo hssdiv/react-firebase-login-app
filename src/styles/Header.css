@@ -22,10 +22,12 @@
 
 .pauseUploadButton {
   color: white;
+  cursor: pointer;
 }
 
 .cancelUploadButton {
-  color: white;
+  color: red;
+  cursor: pointer;
 }
 
 .progressbar {

@@ -22,6 +22,9 @@ const reducer = (state, action) => {
         case 'UPDATE_DOGS_FROM_LOCAL_SERVER':
             console.log('reducer: UPDATE_DOGS_FROM_LOCAL_SERVER')
             return state = { status: 'UPDATE_DOGS_FROM_LOCAL_SERVER' }
+        case 'CLEAR_STATUS':
+            console.log('reducer: CLEAR_STATUS')
+            return state = { status: '' }
         default:
             return state
     }
@@ -93,6 +96,9 @@ export function FirestoreProvider({ children }) {
                 dispatch({ type: 'FIRESTORE_ERROR', error: result.errorMessage })
                 return { result: false, errorMessage: result.errorMessage }
             }
+        },
+        clearStatus: () => {
+            dispatch({ type: 'CLEAR_STATUS' });
         }
     }
 

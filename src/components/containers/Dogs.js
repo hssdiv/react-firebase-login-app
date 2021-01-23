@@ -51,8 +51,31 @@ export function Dogs() {
                     setSimpleErrorMsg(storageStatus.errorMessage)
                     break
                 case 'UPLOADED':
-                    console.log('calling it it storagestatus useeffect')
                     getDogsFromLocalServer();
+                    break;
+                case 'INITIAL':
+                    console.log('initial')
+                    storageMethods.uploadPictureChunk(storageStatus.name, storageStatus.chunks[0]);
+                    break;
+                case 'PROGRESS':
+                    if (storageStatus.paused) {
+                        break;
+                    }
+                    if (storageStatus.canceled) {
+                        storageMethods.clearUploadState();
+                        break;
+                    }
+                    const chunk = storageStatus.chunks[storageStatus.position];
+                    if (chunk) {
+                        storageMethods.uploadPictureChunk(storageStatus.name, chunk);
+                    }
+                    break;
+                case 'RESUME':
+                    const chunkResumed = storageStatus.chunks[storageStatus.position];
+                    storageMethods.uploadPictureChunk(storageStatus.name, chunkResumed);
+                    break;
+                case 'FINAL':
+                    storageMethods.uploadPictureFinal(storageStatus.dog);
                     break;
                 default:
                     break
@@ -65,12 +88,13 @@ export function Dogs() {
                     break
                 case 'UPDATE_DOGS_FROM_LOCAL_SERVER':
                     getDogsFromLocalServer();
+                    firestoreMethods.clearStatus();
                     break;
                 default:
                     break
             }
         }
-    }, [storageStatus, firestoreStatus])
+    }, [storageStatus, firestoreStatus, storageMethods, firestoreMethods])
 
     useEffect(() => {
         if (dogResult) {
@@ -218,7 +242,7 @@ export function Dogs() {
                         setSimpleErrorMsg('Coudn\'t get dogs from server');
                     }
                 } else {
-                    storageMethods.uploadPicture(result)
+                    await storageMethods.uploadPictureInitial(result);
                 }
                 break;
             default:

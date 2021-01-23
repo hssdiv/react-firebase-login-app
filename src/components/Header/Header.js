@@ -16,6 +16,8 @@ export function Header() {
 
     const progressRef = useRef(null)
 
+    const [pauseButton, setPauseButton] = useState('\u275A\u275A')
+
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext)
 
     const [pictureUploaded, setPictureUploaded] = useState(true)
@@ -27,8 +29,12 @@ export function Header() {
                     if (storageStatus.percentage === 0) {
                         setPictureUploaded(false)
                     }
-                    console.log('setting progress to ' + storageStatus.percentage)
-                    console.log(storageStatus.percentage);
+                    if (storageStatus.canceled) {
+                        progressRef.current.value = 0;
+                        setPictureUploaded(true);
+                    }
+                    //console.log('setting progress to ' + storageStatus.percentage)
+                    //console.log(storageStatus.percentage);
                     progressRef.current.value = storageStatus.percentage;
                     break;
                 case 'UPLOADED':
@@ -39,11 +45,20 @@ export function Header() {
                 default:
                     break
             }
+            if (storageStatus.paused) {
+                setPauseButton('\u25B6');
+            } else {
+                setPauseButton('\u275A\u275A');
+            }
         }
     }, [storageStatus])
 
     const handlePauseUploadButton = () => {
-        storageMethods.pausePictureUpload();
+        if (storageStatus.paused) {
+            storageMethods.resumePictureUpload();
+        } else {
+            storageMethods.pausePictureUpload();
+        }
     }
 
     const handleCancelUploadButton = () => {
@@ -118,7 +133,7 @@ export function Header() {
                         className='pauseUploadButton'
                         onClick={handlePauseUploadButton}
                     >
-                        &#10074;&#10074;
+                        {pauseButton}
                     </span>
                     <progress
                         className="progressbar"
