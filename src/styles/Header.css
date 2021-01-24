@@ -23,23 +23,29 @@
 .pauseUploadButton {
   color: white;
   cursor: pointer;
+  padding: 5px;
+  transform: scale(1.3);
 }
 
 .cancelUploadButton {
   color: red;
   cursor: pointer;
+  padding: 5px;
+  transform: scale(1.3);
 }
 
 .progressbar {
   -webkit-appearance: none;
   appearance: none;
   flex-basis: 95%;
+  margin-top: 7px;
 }
 
 .progressbar2 {
   -webkit-appearance: none;
   appearance: none;
   flex-basis: 95%;
+  margin-top: 7px;
 }
 
 .progressbar-container {
