@@ -41,7 +41,7 @@
 .modalConfirm {
   display: block; /* Hidden by default */
   position: fixed; /* Stay in place */
-  overflow-y: hidden;
+  /*overflow-y:visible;*/
   z-index: 1; /* Sit on top */
   left: 0;
   top: 0;

@@ -155,6 +155,7 @@ export function Dogs() {
     }, [dogsChecked])
 
     const handleAddDogOnClick = () => {
+        document.body.style.overflow = "hidden";
         setDogAddModalVisible(true);
     }
 
@@ -218,6 +219,7 @@ export function Dogs() {
     }
 
     const addModalCallback = async (result) => {
+        document.body.style.overflow = "auto";
         setDogAddModalVisible(false);
         switch (result.action) {
             case 'MODAL_CLOSED':

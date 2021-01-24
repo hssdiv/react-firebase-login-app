@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   transition: margin-left .5s;
+  /*overflow: hidden;*/
 }
 
 .error {
