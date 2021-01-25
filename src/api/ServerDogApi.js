@@ -103,11 +103,13 @@ export default {
             return { successful: false, errorMessage: error.message }
         }
     },
-    saveDogCustomFinal: async (dogToSave) => {
+    saveDogCustomFinal: async (name, dogToSave) => {
         try {
             console.log('sending final');
+            console.log(name);
+            console.log(dogToSave);
             const requestOptions = generateLocalRequestOptions('POST', {
-                name: dogToSave.picture.name,
+                name,
                 breed: dogToSave.breed,
                 subBreed: dogToSave.subBreed,
             });

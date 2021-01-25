@@ -137,7 +137,7 @@ export function Header() {
                     </span>
                     <progress
                         className="progressbar"
-                        value="0"
+                        value="00"
                         max="100"
                         ref={progressRef}
                     >

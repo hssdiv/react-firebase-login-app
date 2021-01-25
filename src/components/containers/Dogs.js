@@ -54,6 +54,7 @@ export function Dogs() {
                     getDogsFromLocalServer();
                     break;
                 case 'INITIAL':
+                    setSpinnerIsVisible(false)
                     console.log('initial')
                     storageMethods.uploadPictureChunk(storageStatus.name, storageStatus.chunks[0]);
                     break;
@@ -75,7 +76,7 @@ export function Dogs() {
                     storageMethods.uploadPictureChunk(storageStatus.name, chunkResumed);
                     break;
                 case 'FINAL':
-                    storageMethods.uploadPictureFinal(storageStatus.dog);
+                    storageMethods.uploadPictureFinal(storageStatus.name, storageStatus.dog);
                     break;
                 default:
                     break
@@ -220,6 +221,8 @@ export function Dogs() {
 
     const addModalCallback = async (result) => {
         document.body.style.overflow = "auto";
+        setSpinnerIsVisible(true)
+
         setDogAddModalVisible(false);
         switch (result.action) {
             case 'MODAL_CLOSED':

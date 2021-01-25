@@ -3,6 +3,7 @@ import '../../styles/ModalEdit.css'
 import SimpleErrorMessage from '../SimpleErrorMessage'
 import useEscape from '../../ui/useEscape'
 import useEnter from '../../ui/useEnter'
+import Spinner from '../Spinner'
 
 export function DogAddModal({ callback }) {
     const [breed, setBreed] = useState(null);
@@ -15,6 +16,8 @@ export function DogAddModal({ callback }) {
     const imagePreviewRef = useRef(null)
 
     const [addType, setAddType] = useState('RANDOM');
+
+    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false)
 
     const handleCancelButton = () => {
         setError(null);
@@ -72,9 +75,11 @@ export function DogAddModal({ callback }) {
         if (files[0]) {
             setDogPicture(files[0]);
 
+            setSpinnerIsVisible(true);
             const fr = new FileReader();
             fr.onload = function () {
                 imagePreviewRef.current.src = fr.result;
+                setSpinnerIsVisible(false)
             }
             fr.readAsDataURL(files[0]);
         }
@@ -84,6 +89,9 @@ export function DogAddModal({ callback }) {
         <div
             className='modalConfirm'
         >
+            {spinnerIsVisible &&
+                <Spinner />
+            }
             <span
                 onClick={handleCloseModal}
                 className='modalClose'

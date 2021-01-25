@@ -1,5 +1,5 @@
 import React, { useReducer } from 'react'
-//import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
+import { UniqueIdGenerator } from './../util/UniqueIdGenerator'
 import ServerDogApi from '../api/ServerDogApi'
 import { toBase64, createChunksFromBase64 } from '../util'
 
@@ -115,7 +115,8 @@ export function FirebaseStorageProvider({ children }) {
 
                 console.log(customDog)
 
-                const name = customDog.picture.name; // use uniqueIdGen?
+                //const name = customDog.picture.name; // use uniqueIdGen?
+                const name = UniqueIdGenerator() + '.jpg';
                 const base64file = await toBase64(data.dogPicture);
                 const resultInitial = await ServerDogApi.saveDogCustomInitial(name, base64file)
                 
@@ -156,9 +157,9 @@ export function FirebaseStorageProvider({ children }) {
                     return { result: false, errorMessage: error.message }
                 }
             },
-            uploadPictureFinal: async (customDog) => {
+            uploadPictureFinal: async (name, customDog) => {
                 try {
-                const resultFinal = await ServerDogApi.saveDogCustomFinal(customDog)
+                const resultFinal = await ServerDogApi.saveDogCustomFinal(name, customDog)
 
                 if (resultFinal.successful) {
                     dispatch({ type: 'CLEAR_STATE' })
